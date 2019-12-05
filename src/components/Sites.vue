@@ -1,6 +1,6 @@
 <template>
   <div class="cards">
-    <div id="blur-div" v-if="showCreateSiteWindow"></div>
+    <div id="blur-div" v-show="showCreateSiteWindow"></div>
     <div class="card">
       <div class="card-header">
         <h5>Projeto</h5>
@@ -28,7 +28,7 @@
         </tr>
       </table>
     </div>
-    <div class="card create-site" v-if="showCreateSiteWindow">
+    <div class="card create-site" v-show="showCreateSiteWindow">
       <h5>Novo site</h5>
       <input type="text" placeholder="Estação..." v-model="estacao"><br>
       <input type="text" placeholder="Escopo..." v-model="escopo"><br>

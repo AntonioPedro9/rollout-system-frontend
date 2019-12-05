@@ -1,13 +1,13 @@
 <template>
   <div class="cards">
-    <div id="blur-div" v-if="show"></div>
+    <div id="blur-div" v-show="showCreateProjectWindow"></div>
     <div class="card" v-for="projeto in projetos" :key="projeto.id">
       <h5>{{ projeto.nome }}</h5>
       <p>{{ projeto.estacoes }} estações</p>
       <p>{{ projeto.concluidas }} concluidas</p>
       <button class="theme-blue" @click="$router.push('/Sites')">Abrir</button>
     </div>
-    <div class="card create-project" v-if="show">
+    <div class="card create-project" v-show="showCreateProjectWindow">
       <h5>Novo projeto</h5>
       <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
       <button class="theme-blue" v-on:click="createProject()">Criar</button>
