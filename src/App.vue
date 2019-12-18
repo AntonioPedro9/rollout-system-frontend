@@ -36,6 +36,10 @@
 </script>
 
 <style>
+
+  /* Importing Aperial Design css library */
+  @import '/aperial.css';
+
   .container {
     width: 100vw;
     min-height: 100vh;
