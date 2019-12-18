@@ -1,16 +1,21 @@
 <template>
   <div class="cards">
-    <div id="blur-div" v-show="showCreateProjectWindow"></div>
     <div class="card" v-for="projeto in projetos" :key="projeto.id">
-      <h5>{{ projeto.nome }}</h5>
+      <div class="card-header">
+        <h5>{{ projeto.nome }}</h5>
+        <i class="material-icons icon-button">more_vert</i>
+      </div>
       <p>{{ projeto.estacoes }} estações</p>
       <p>{{ projeto.concluidas }} concluidas</p>
-      <button class="theme-blue" @click="$router.push('/Sites')">Abrir</button>
+      <button class="theme-blue" v-on:click="$router.push('/sites')">Abrir</button>
     </div>
-    <div class="card create-project" v-show="showCreateProjectWindow">
-      <h5>Novo projeto</h5>
-      <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
-      <button class="theme-blue" v-on:click="createProject()">Criar</button>
+    <div id="blur-div" v-show="showCreateProjectWindow">
+      <div class="card create-project">
+        <h5>Novo projeto</h5>
+        <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
+        <button class="theme-blue" v-on:click="createProject()">Criar</button>
+        <button class="theme-red" v-on:click="showCreateProjectWindow = false">Cancelar</button>
+      </div>
     </div>
     <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
       <i class="material-icons">add</i>
@@ -35,14 +40,19 @@
     },
     methods: {
       createProject() {
-        this.projetos.push({
-          id: this.projetos.length + 1,
-          nome: this.nome,
-          estacoes: 0,
-          concluidas: 0,
-        });
-        this.showCreateProjectWindow = false
-        this.nome = ''
+        if (this.nome.replace(/\s/g, "") !== "") {
+          this.projetos.push({
+            id: this.projetos.length + 1,
+            nome: this.nome,
+            estacoes: 0,
+            concluidas: 0,
+          });
+          this.showCreateProjectWindow = false
+          this.nome = ''
+        }
+        else {
+          alert("Nome iválido")
+        }
       }
     }
   }
@@ -51,7 +61,7 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   #blur-div {
-    position: absolute;
+    position: fixed;
     top: 0px;
     right: 0px;
     bottom: 0px;
@@ -59,10 +69,15 @@
     background-color: rgba(0, 0, 0, 0.64);
     backdrop-filter: blur(2px);
   }
+  .card .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
   .create-project {
-    position: absolute;
+    position: fixed;
     top: 30vh;
-    margin: auto;
+    left: calc(50vw - 120px);
     z-index: 1;
   }
   .fab {

@@ -3,9 +3,11 @@
     <div style="display: flex; flex-direction: column;">
       <div class="card">
         <h5>Nome do projeto</h5>
-        <label class="input-label">Localidade</label><input type="text"/>
         <label class="input-label">Estação</label><input type="text"/>
         <label class="input-label">Escopo</label><input type="text"/>
+        <label class="input-label">Localidade</label><input type="text"/>
+        <br>
+        <button class="theme-red">Deletar site</button>
       </div>
       <div class="card">
         <div class="pie-chart" :style="chartStyle"></div>
@@ -13,7 +15,13 @@
     </div>
     <div>
       <div class="card">
-        <h5>Demandas</h5>
+        <div class="card-header">
+          <h5>Demandas</h5>
+          <div class="search-box">
+            <i class="material-icons">search</i>
+            <input type="text" v-model="search" placeholder="Buscar..."/>
+          </div>
+        </div>
         <table>
           <tr>
             <th>Descrição</th>
@@ -21,7 +29,7 @@
             <th>Status</th>
             <th>Ações</th>
           </tr>
-          <tr v-for="demanda in demandas" :key="demanda.descricao">
+          <tr v-for="(demanda, index) in filteredTasks" :key="demanda.descricao">
             <td>{{ demanda.descricao }}</td>
             <td>{{ demanda.comentario }}</td>
             <td>
@@ -35,14 +43,23 @@
             </td>
             <td>
               <i class="material-icons icon-button" style="font-size: 18px">edit</i>
-              <i class="material-icons icon-button" style="font-size: 18px">delete</i>
+              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="removeTask(index)">delete</i>
             </td>
           </tr>
         </table>
       </div>
     </div>
-    <button class="fab theme-blue">
-      <i class="material-icons">edit</i>
+    <div id="blur-div" v-show="showCreateTaskWindow">
+      <div class="card create-task">
+        <h5>Nova demanda</h5>
+        <input type="text" placeholder="Descrição..." v-model="descricao"><br>
+        <input type="text" placeholder="Comentário..." v-model="comentario"><br>
+        <button class="theme-blue" v-on:click="createTask()">Criar</button>
+        <button class="theme-red" v-on:click="showCreateTaskWindow = false">Cancelar</button>
+      </div>
+    </div>
+    <button class="fab theme-blue" v-on:click="showCreateTaskWindow = true">
+      <i class="material-icons">add</i>
     </button>
   </div>
 </template>
@@ -52,6 +69,11 @@
     name: 'Project',
     data: () => {
       return {
+        search: '',
+        showCreateTaskWindow: false,
+        descricao: '',
+        comentario: '',
+        
         demandas: [
           { descricao: 'Massa 1', comentario: 'Massa massa 1', status: 'Concluído', concluido: true },
           { descricao: 'Massa 2', comentario: 'Massa massa 2', status: 'Não iniciado', naoIniciado: true },
@@ -64,12 +86,52 @@
             rgb(33, 150, 243) 0 100%`
         }
       }
+    },
+    computed: {
+      filteredTasks() {
+        return this.demandas.filter( (demanda) => {
+          return demanda.descricao.match(this.search) || demanda.comentario.match(this.search);
+        });
+      }
+    },
+    methods: {
+      removeTask(index) {
+        if (confirm("Deseja excluir essa demanda?")) {
+          this.demandas.splice(index, 1);
+        }
+      },
+      createTask() {
+        if (this.descricao.replace(/\s/g, "") !== "" && this.comentario.replace(/\s/g, "") !== "") {
+          this.demandas.push({
+            descricao: this.descricao,
+            comentario: this.comentario,
+            status: 'Não iniciado',
+            naoIniciado: true,
+          });
+          this.showCreateTaskWindow = false
+          this.descricao = ''
+          this.comentario = ''
+          this.status = ''
+        }
+        else {
+          alert("Informações inválidas")
+        }
+      }
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  #blur-div {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-color: rgba(0, 0, 0, 0.64);
+    backdrop-filter: blur(2px);
+  }
   .cards .card {
     flex: 0 0 auto;
   }
@@ -87,9 +149,23 @@
     height: 194px;
     border-radius: 50%;
   }
+  .card .card-header, .search-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
   .status {
     padding: 4px 8px;
     border-radius: 2px;
+
+    cursor: pointer;
+  }
+  .create-task {
+    position: fixed;
+    top: 30vh;
+    left: calc(50vw - 120px);
+    z-index: 1;
   }
   .fab {
     position: fixed;

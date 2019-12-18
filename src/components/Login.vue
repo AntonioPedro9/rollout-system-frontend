@@ -5,9 +5,9 @@
       <form>
         <input type="email" placeholder="Email..."/>
         <input type="password" placeholder="Senha..."/>
-        <input class="theme-blue" type="submit" @click="$router.push('/Home')"/>
+        <input class="theme-blue" type="submit" v-on:click="$router.push('/home')"/>
       </form>
-      <h6>Não tem uma conta? <a @click="$router.push('/SignUp')">Cadastrar-se</a></h6>
+      <h6>Não tem uma conta? <a v-on:click="$router.push('/signUp')">Cadastrar-se</a></h6>
     </div>
   </div>
 </template>

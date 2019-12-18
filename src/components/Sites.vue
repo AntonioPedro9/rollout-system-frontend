@@ -1,6 +1,5 @@
 <template>
   <div class="cards">
-    <div id="blur-div" v-show="showCreateSiteWindow"></div>
     <div class="card">
       <div class="card-header">
         <h5>Projeto</h5>
@@ -16,7 +15,7 @@
           <th>Localidade</th>
           <th>Progresso</th>
         </tr>
-        <tr class="site" v-for="site in filteredSites" :key="site.station" @click="$router.push('/Project')">
+        <tr class="site" v-for="site in filteredSites" :key="site.station" v-on:click="$router.push('/sites/project')">
           <td>{{ site.estacao }}</td>
           <td>{{ site.escopo }}</td>
           <td>{{ site.localidade }}</td>
@@ -28,12 +27,15 @@
         </tr>
       </table>
     </div>
-    <div class="card create-site" v-show="showCreateSiteWindow">
-      <h5>Novo site</h5>
-      <input type="text" placeholder="Estação..." v-model="estacao"><br>
-      <input type="text" placeholder="Escopo..." v-model="escopo"><br>
-      <input type="text" placeholder="Localidade..." v-model="localidade"><br>
-      <button class="theme-blue" v-on:click="createSite()">Criar</button>
+    <div id="blur-div" v-show="showCreateSiteWindow">
+      <div class="card create-site">
+        <h5>Novo site</h5>
+        <input type="text" placeholder="Estação..." v-model="estacao"><br>
+        <input type="text" placeholder="Escopo..." v-model="escopo"><br>
+        <input type="text" placeholder="Localidade..." v-model="localidade"><br>
+        <button class="theme-blue" v-on:click="createSite()">Criar</button>
+        <button class="theme-red" v-on:click="showCreateSiteWindow = false">Cancelar</button>
+      </div>
     </div>
     <button class="fab theme-blue" v-on:click="showCreateSiteWindow = true">
       <i class="material-icons">add</i>
@@ -60,7 +62,7 @@
       }
     },
     computed: {
-      filteredSites: function() {
+      filteredSites() {
         return this.sites.filter( (site) => {
           return site.estacao.match(this.search) || site.escopo.match(this.search) || site.localidade.match(this.search);
         });
@@ -68,15 +70,20 @@
     },
     methods: {
       createSite() {
-        this.sites.push({
-          estacao: this.estacao,
-          escopo: this.escopo,
-          localidade: this.localidade,
-        });
-        this.showCreateSiteWindow = false
-        this.estacao = ''
-        this.escopo = ''
-        this.localidade = ''
+        if (this.estacao.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.localidade.replace(/\s/g, "") !== "") {
+          this.sites.push({
+            estacao: this.estacao,
+            escopo: this.escopo,
+            localidade: this.localidade,
+          });
+          this.showCreateSiteWindow = false
+          this.estacao = ''
+          this.escopo = ''
+          this.localidade = ''
+        }
+        else {
+          alert("Informações inválidas")
+        }
       }
     }
   }
@@ -92,7 +99,7 @@
     justify-content: space-between;
     align-items: center;
   }
-  .card .card-header .search-box {
+  .card .card-header, .search-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -118,7 +125,7 @@
     border-radius: 2px;
   }
   #blur-div {
-    position: absolute;
+    position: fixed;
     top: 0px;
     right: 0px;
     bottom: 0px;
@@ -127,9 +134,9 @@
     backdrop-filter: blur(2px);
   }
   .create-site {
-    position: absolute;
+    position: fixed;
     top: 30vh;
-    margin: auto;
+    left: calc(50vw - 120px);
     z-index: 1;
   }
   .fab {

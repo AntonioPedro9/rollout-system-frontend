@@ -12,9 +12,9 @@ export default new Router({
   mode: 'history',
   routes: [
     { path: '/', name: 'Login', component: Login },
-    { path: '/SignUp', name: 'SignUp', component: SignUp },
-    { path: '/Home', name: 'Home', component: Home },
-    { path: '/Sites', name: 'Sites', component: Sites },
-    { path: '/Project', name: 'Project', component: Project },
+    { path: '/signUp', name: 'SignUp', component: SignUp },
+    { path: '/home', name: 'Home', component: Home },
+    { path: '/sites', name: 'Sites', component: Sites },
+    { path: '/sites/project', name: 'Project', component: Project },
   ]
 })

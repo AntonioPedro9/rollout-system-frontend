@@ -6,9 +6,9 @@
         <input type="email" placeholder="Email..."/>
         <input type="password" placeholder="Senha..."/>
         <input type="password" placeholder="Confirmar senha..."/>
-        <input class="theme-blue" type="submit" @click="$router.push('/Home')"/>
+        <input class="theme-blue" type="submit" v-on:click="$router.push('/home')"/>
       </form>
-      <h6>Já tem uma conta? <a @click="$router.push('/')">Conecte-se</a></h6>
+      <h6>Já tem uma conta? <a v-on:click="$router.push('/')">Conecte-se</a></h6>
     </div>
   </div>
 </template>
