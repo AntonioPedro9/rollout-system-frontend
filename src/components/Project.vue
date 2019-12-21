@@ -43,7 +43,7 @@
             </td>
             <td>
               <i class="material-icons icon-button" style="font-size: 18px">edit</i>
-              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="removeTask(index)">delete</i>
+              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteTask(index)">delete</i>
             </td>
           </tr>
         </table>
@@ -95,11 +95,6 @@
       }
     },
     methods: {
-      removeTask(index) {
-        if (confirm("Deseja excluir essa demanda?")) {
-          this.demandas.splice(index, 1);
-        }
-      },
       createTask() {
         if (this.descricao.replace(/\s/g, "") !== "" && this.comentario.replace(/\s/g, "") !== "") {
           this.demandas.push({
@@ -115,6 +110,11 @@
         }
         else {
           alert("Informações inválidas")
+        }
+      },
+      deleteTask(index) {
+        if (confirm("Deseja excluir essa demanda?")) {
+          this.demandas.splice(index, 1);
         }
       }
     }

@@ -1,9 +1,17 @@
 <template>
   <div class="cards">
-    <div class="card" v-for="projeto in projetos" :key="projeto.id">
+    <div class="card" v-for="(projeto, index) in projetos" :key="projeto.id">
       <div class="card-header">
         <h5>{{ projeto.nome }}</h5>
-        <i class="material-icons icon-button">more_vert</i>
+        <div>
+          <i class="material-icons icon-button options-button">more_vert</i>
+          <div class="card card-options">
+            <ul>
+              <li v-on:click="renameProject(index)">Renomear</li>
+              <li v-on:click="deleteProject(index)">Deletar</li>
+            </ul>
+          </div>
+        </div>
       </div>
       <p>{{ projeto.estacoes }} estações</p>
       <p>{{ projeto.concluidas }} concluidas</p>
@@ -53,6 +61,21 @@
         else {
           alert("Nome iválido")
         }
+      },
+      deleteProject(index) {
+        if (confirm("Deseja excluir esse projeto?")) {
+          this.projetos.splice(index, 1)
+        }
+      },
+      renameProject(index) {
+        let newName = prompt("Novo nome:")
+
+        if (newName.replace(/\s/g, "") !== "") {
+          this.projetos[index].nome = newName
+        }
+        else {
+          alert("Nome iválido")
+        }
       }
     }
   }
@@ -73,6 +96,24 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+  }
+  .card-options {
+    position: absolute;
+    margin-top: -44px;
+    margin-left: -59px; 
+    display: none; 
+  }
+  .card-options ul li {
+    cursor: pointer;
+  }
+  .card-options ul li:hover {
+    background-color: #F1F1F1
+  }
+  .options-button:hover + .card-options { 
+    display: block;
+  }
+  .card-options:hover { 
+    display: block;
   }
   .create-project {
     position: fixed;

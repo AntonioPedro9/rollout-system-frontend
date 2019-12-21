@@ -25,7 +25,7 @@
               <div class="bar-fill"></div>
             </div>
           </td>
-          <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="removeSite(index)">delete</i></td>
+          <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteSite(index)">delete</i></td>
         </tr>
       </table>
     </div>
@@ -87,7 +87,7 @@
           alert("Informações inválidas")
         }
       },
-      removeSite(index) {
+      deleteSite(index) {
         if (confirm("Deseja excluir esse site?")) {
           this.sites.splice(index, 1);
         }
