@@ -14,16 +14,18 @@
           <th>Escopo</th>
           <th>Localidade</th>
           <th>Progresso</th>
+          <th></th>
         </tr>
-        <tr class="site" v-for="site in filteredSites" :key="site.station" v-on:click="$router.push('/sites/project')">
-          <td>{{ site.estacao }}</td>
-          <td>{{ site.escopo }}</td>
-          <td>{{ site.localidade }}</td>
-          <td>
+        <tr class="site" v-for="(site, index) in filteredSites" :key="site.station">
+          <td v-on:click="$router.push('/sites/project')">{{ site.estacao }}</td>
+          <td v-on:click="$router.push('/sites/project')">{{ site.escopo }}</td>
+          <td v-on:click="$router.push('/sites/project')">{{ site.localidade }}</td>
+          <td v-on:click="$router.push('/sites/project')">
             <div class="bar">
               <div class="bar-fill"></div>
             </div>
           </td>
+          <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteSite(index)">delete</i></td>
         </tr>
       </table>
     </div>
@@ -84,7 +86,12 @@
         else {
           alert("Informações inválidas")
         }
-      }
+      },
+      deleteSite(index) {
+        if (confirm("Deseja excluir esse site?")) {
+          this.sites.splice(index, 1);
+        }
+      },
     }
   }
 </script>

@@ -1,11 +1,12 @@
 <template>
-  <div class="cards">
+  <div class="cards" oncontextmenu="return false">
     <div class="card">
       <h5>Cadastrar-se</h5>
-      <form>
-        <input type="email" placeholder="Email..."/>
-        <input type="password" placeholder="Senha..."/>
-        <input type="password" placeholder="Confirmar senha..."/>
+      <form onpaste="return false">
+        <input name="Email" type="email" placeholder="Email..." autocomplete="off"/>
+        <input name="Matricula" type="text" placeholder="Matrícula..." autocomplete="off"/>
+        <input name="Senha" type="password" placeholder="Senha..." autocomplete="off"/>
+        <input name="ConfirmarSenha" type="password" placeholder="Confirmar senha..." autocomplete="off"/>
         <input class="theme-blue" type="submit" v-on:click="$router.push('/home')"/>
       </form>
       <h6>Já tem uma conta? <a v-on:click="$router.push('/')">Conecte-se</a></h6>
