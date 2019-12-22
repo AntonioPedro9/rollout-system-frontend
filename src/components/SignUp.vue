@@ -7,6 +7,7 @@
         <input name="Matricula" type="text" placeholder="Matrícula..." autocomplete="off"/>
         <input name="Senha" type="password" placeholder="Senha..." autocomplete="off"/>
         <input name="ConfirmarSenha" type="password" placeholder="Confirmar senha..." autocomplete="off"/>
+
         <input class="theme-blue" type="submit" v-on:click="$router.push('/home')"/>
       </form>
       <h6>Já tem uma conta? <a v-on:click="$router.push('/')">Conecte-se</a></h6>
