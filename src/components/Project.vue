@@ -3,11 +3,9 @@
     <div style="display: flex; flex-direction: column;">
       <div class="card">
         <h5>Nome do projeto</h5>
-        <label class="input-label">Estação</label><input type="text"/>
-        <label class="input-label">Escopo</label><input type="text"/>
-        <label class="input-label">Localidade</label><input type="text"/>
-        <br>
-        <button class="theme-red">Deletar site</button>
+        <label class="input-label">Estação</label><input type="text" v-model="estacao"/>
+        <label class="input-label">Escopo</label><input type="text" v-model="escopo"/>
+        <label class="input-label">Localidade</label><input type="text" v-model="localidade"/>
       </div>
       <div class="card">
         <div class="pie-chart" :style="chartStyle"></div>
@@ -69,8 +67,13 @@
     name: 'Project',
     data: () => {
       return {
+        estacao: 'Estação X',
+        escopo: 'Escopo X',
+        localidade: 'Localidade X',
+
         search: '',
         showCreateTaskWindow: false,
+
         descricao: '',
         comentario: '',
         
