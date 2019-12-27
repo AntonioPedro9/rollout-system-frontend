@@ -31,7 +31,7 @@
             <td>{{ demanda.descricao }}</td>
             <td>{{ demanda.comentario }}</td>
             <td>
-              <span class="status theme-red" v-on:click="updateStatus(index)"> {{ demanda.status }} </span>
+              <div class="status theme-red" v-on:click="updateStatus(index)"> {{ demanda.status }} </div>
             </td>
             <td>
               <i class="material-icons icon-button" style="font-size: 18px">edit</i>
@@ -161,6 +161,7 @@
     align-items: center;
   }
   .status {
+    width: 124px;
     padding: 4px 8px;
     border-radius: 2px;
 
