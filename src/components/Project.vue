@@ -50,8 +50,9 @@
     <button class="fab theme-blue" v-on:click="showCreateTaskWindow = true">
       <i class="material-icons">add</i>
     </button>
+    <!-- Create task window: -->
     <div class="blur-div" v-show="showCreateTaskWindow">
-      <div class="card create-task">
+      <div class="card creation-window">
         <h5>Nova demanda</h5>
         <input type="text" placeholder="Descrição..." v-model="descricao"><br>
         <input type="text" placeholder="Comentário..." v-model="comentario"><br>
@@ -154,12 +155,6 @@
     border-radius: 2px;
 
     cursor: pointer;
-  }
-  .create-task {
-    position: fixed;
-    top: 30vh;
-    left: calc(50vw - 120px);
-    z-index: 1;
   }
   .fab {
     position: fixed;

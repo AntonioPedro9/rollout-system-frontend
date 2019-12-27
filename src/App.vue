@@ -73,4 +73,12 @@
     background-color: rgba(0, 0, 0, 0.64);
     backdrop-filter: blur(2px);
   }
+
+  /* this will be used in other components as a creation window */
+  .creation-window {
+    position: fixed;
+    top: 30vh;
+    left: calc(50vw - 120px);
+    z-index: 1;
+  }
 </style>

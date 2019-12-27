@@ -20,8 +20,9 @@
     <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
       <i class="material-icons">add</i>
     </button>
+    <!-- Create project window: -->
     <div class="blur-div" v-show="showCreateProjectWindow">
-      <div class="card create-project">
+      <div class="card creation-window">
         <h5>Novo projeto</h5>
         <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
         <button class="theme-blue" v-on:click="createProject()">Criar</button>
@@ -105,12 +106,6 @@
   }
   .card-options:hover { 
     display: block;
-  }
-  .create-project {
-    position: fixed;
-    top: 30vh;
-    left: calc(50vw - 120px);
-    z-index: 1;
   }
   .fab {
     position: fixed;

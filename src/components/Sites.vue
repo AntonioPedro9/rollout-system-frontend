@@ -32,8 +32,9 @@
     <button class="fab theme-blue" v-on:click="showCreateSiteWindow = true">
       <i class="material-icons">add</i>
     </button>
+    <!-- Create site window: -->
     <div class="blur-div" v-show="showCreateSiteWindow">
-      <div class="card create-site">
+      <div class="card creation-window">
         <h5>Novo site</h5>
         <input type="text" placeholder="Estação..." v-model="estacao"><br>
         <input type="text" placeholder="Escopo..." v-model="escopo"><br>
@@ -130,12 +131,6 @@
 
     background-color: rgba(33, 150, 243, 1.0);
     border-radius: 2px;
-  }
-  .create-site {
-    position: fixed;
-    top: 30vh;
-    left: calc(50vw - 120px);
-    z-index: 1;
   }
   .fab {
     position: fixed;
