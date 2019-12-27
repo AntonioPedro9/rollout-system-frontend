@@ -5,10 +5,9 @@
       <form onpaste="return false">
         <input name="Matricula" type="text" placeholder="Matrícula..." autocomplete="off"/>
         <input name="Senha" type="password" placeholder="Senha..." autocomplete="off"/>
-
         <input class="theme-blue" type="submit" v-on:click="$router.push('/home')"/>
       </form>
-      <h6>Não tem uma conta? <a v-on:click="$router.push('/signUp')">Cadastrar-se</a></h6>
+      <h6>Não tem uma conta? <a v-on:click="$router.push('/signUp')">Cadastre-se</a></h6>
     </div>
   </div>
 </template>
