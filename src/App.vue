@@ -62,4 +62,15 @@
   header, main, footer {
     flex-shrink: 0;
   }
+
+  /* this will be used to blur the background of some components */
+  .blur-div {
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    left: 0px;
+    background-color: rgba(0, 0, 0, 0.64);
+    backdrop-filter: blur(2px);
+  }
 </style>

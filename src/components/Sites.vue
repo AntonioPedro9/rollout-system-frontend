@@ -29,7 +29,10 @@
         </tr>
       </table>
     </div>
-    <div id="blur-div" v-show="showCreateSiteWindow">
+    <button class="fab theme-blue" v-on:click="showCreateSiteWindow = true">
+      <i class="material-icons">add</i>
+    </button>
+    <div class="blur-div" v-show="showCreateSiteWindow">
       <div class="card create-site">
         <h5>Novo site</h5>
         <input type="text" placeholder="Estação..." v-model="estacao"><br>
@@ -39,9 +42,6 @@
         <button class="theme-red" v-on:click="showCreateSiteWindow = false">Cancelar</button>
       </div>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateSiteWindow = true">
-      <i class="material-icons">add</i>
-    </button>
   </div>
 </template>
 
@@ -130,15 +130,6 @@
 
     background-color: rgba(33, 150, 243, 1.0);
     border-radius: 2px;
-  }
-  #blur-div {
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-color: rgba(0, 0, 0, 0.64);
-    backdrop-filter: blur(2px);
   }
   .create-site {
     position: fixed;

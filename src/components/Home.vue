@@ -17,7 +17,10 @@
       <p>{{ projeto.concluidas }} concluidas</p>
       <button class="theme-blue" v-on:click="$router.push('/sites')">Abrir</button>
     </div>
-    <div id="blur-div" v-show="showCreateProjectWindow">
+    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
+      <i class="material-icons">add</i>
+    </button>
+    <div class="blur-div" v-show="showCreateProjectWindow">
       <div class="card create-project">
         <h5>Novo projeto</h5>
         <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
@@ -25,9 +28,6 @@
         <button class="theme-red" v-on:click="showCreateProjectWindow = false">Cancelar</button>
       </div>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
-      <i class="material-icons">add</i>
-    </button>
   </div>
 </template>
 
@@ -83,15 +83,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  #blur-div {
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-color: rgba(0, 0, 0, 0.64);
-    backdrop-filter: blur(2px);
-  }
   .card .card-header {
     display: flex;
     justify-content: space-between;

@@ -49,7 +49,10 @@
         </table>
       </div>
     </div>
-    <div id="blur-div" v-show="showCreateTaskWindow">
+    <button class="fab theme-blue" v-on:click="showCreateTaskWindow = true">
+      <i class="material-icons">add</i>
+    </button>
+    <div class="blur-div" v-show="showCreateTaskWindow">
       <div class="card create-task">
         <h5>Nova demanda</h5>
         <input type="text" placeholder="Descrição..." v-model="descricao"><br>
@@ -58,9 +61,6 @@
         <button class="theme-red" v-on:click="showCreateTaskWindow = false">Cancelar</button>
       </div>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateTaskWindow = true">
-      <i class="material-icons">add</i>
-    </button>
   </div>
 </template>
 
@@ -123,15 +123,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  #blur-div {
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-color: rgba(0, 0, 0, 0.64);
-    backdrop-filter: blur(2px);
-  }
   .cards .card {
     flex: 0 0 auto;
   }
