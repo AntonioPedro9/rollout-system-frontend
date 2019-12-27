@@ -29,7 +29,7 @@
             <th>Status</th>
             <th>Ações</th>
           </tr>
-          <tr v-for="(demanda, index) in filteredTasks" :key="demanda.descricao">
+          <tr v-for="(demanda, index) in filteredTasks" :key="index">
             <td>{{ demanda.descricao }}</td>
             <td>{{ demanda.comentario }}</td>
             <td>

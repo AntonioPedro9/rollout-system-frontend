@@ -1,6 +1,6 @@
 <template>
   <div class="cards">
-    <div class="card" v-for="(projeto, index) in projetos" :key="projeto.id">
+    <div class="card" v-for="(projeto, index) in projetos" :key="index">
       <div class="card-header">
         <h5>{{ projeto.nome }}</h5>
         <div>
@@ -40,9 +40,9 @@
         nome: '',
         
         projetos: [
-          { id: 0, nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
-          { id: 1, nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
-          { id: 2, nome: 'Minas 2018', estacoes: 6, concluidas: 0 },
+          { nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
+          { nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
+          { nome: 'Minas 2018', estacoes: 6, concluidas: 0 },
         ]
       }
     },

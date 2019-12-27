@@ -16,7 +16,7 @@
           <th>Progresso</th>
           <th></th>
         </tr>
-        <tr class="site" v-for="(site, index) in filteredSites" :key="site.station">
+        <tr class="site" v-for="(site, index) in filteredSites" :key="index">
           <td v-on:click="$router.push('/sites/project')">{{ site.estacao }}</td>
           <td v-on:click="$router.push('/sites/project')">{{ site.escopo }}</td>
           <td v-on:click="$router.push('/sites/project')">{{ site.localidade }}</td>
