@@ -236,8 +236,10 @@ input[type="month"],
 input[type="week"],
 input[type="datetime-local"],
 input[type="search"],
-input[type="reset"] {
-  width: 192px;
+input[type="reset"],
+input[type="checkbox"],
+select {
+  width: 200px;
   padding: 4px 0px;
   margin: 8px;
   
@@ -268,7 +270,8 @@ input[type="reset"] {
   input[type="week"]:focus,
   input[type="datetime-local"]:focus,
   input[type="search"]:focus,
-  input[type="reset"]:focus {
+  input[type="reset"]:focus,
+  select:focus {
     border-bottom: 2px solid rgb(33, 150, 243);
   }
 ::-webkit-input-placeholder {
