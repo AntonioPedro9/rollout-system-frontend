@@ -31,13 +31,7 @@
             <td>{{ demanda.descricao }}</td>
             <td>{{ demanda.comentario }}</td>
             <td>
-              <span class="status" v-bind:class="{
-                'theme-red': demanda.naoIniciado, 
-                'theme-blue': demanda.emAndamento, 
-                'theme-green': demanda.concluido}
-              ">
-                {{ demanda.status }}
-              </span>
+              <span class="status theme-red" v-on:click="updateStatus(index)"> {{ demanda.status }} </span>
             </td>
             <td>
               <i class="material-icons icon-button" style="font-size: 18px">edit</i>
@@ -79,9 +73,9 @@
         comentario: '',
         
         demandas: [
-          { descricao: 'Massa 1', comentario: 'Massa massa 1', status: 'Concluído', concluido: true },
-          { descricao: 'Massa 2', comentario: 'Massa massa 2', status: 'Não iniciado', naoIniciado: true },
-          { descricao: 'Massa 3', comentario: 'Massa massa 3', status: 'Em andamento', emAndamento: true },
+          { descricao: 'Massa 1', comentario: 'Massa massa 1', status: 'Não iniciado' },
+          { descricao: 'Massa 2', comentario: 'Massa massa 2', status: 'Não iniciado' },
+          { descricao: 'Massa 3', comentario: 'Massa massa 3', status: 'Não iniciado' },
         ],
         chartStyle: {
           background: `conic-gradient(
@@ -120,6 +114,22 @@
         if (confirm("Deseja excluir essa demanda?")) {
           this.demandas.splice(index, 1);
         }
+      },
+      updateStatus(index) {
+        let status = document.getElementsByClassName("status")
+
+        if (status[index].classList == "status theme-red") {
+          status[index].classList.replace("theme-red", "theme-blue")
+          status[index].innerHTML = "Em andamento"
+        }
+        else if (status[index].classList == "status theme-blue") {
+          status[index].classList.replace("theme-blue", "theme-green")
+          status[index].innerHTML = "Concluído"
+        }
+        else {
+          status[index].classList.replace("theme-green", "theme-red")
+          status[index].innerHTML = "Não iniciado"
+        }
       }
     }
   }
@@ -155,6 +165,12 @@
     border-radius: 2px;
 
     cursor: pointer;
+
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
   }
   .fab {
     position: fixed;
