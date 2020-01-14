@@ -28,6 +28,9 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  select {
+    margin: 8px;
+  }
   h6 {
     font-size: 14px;
   }
