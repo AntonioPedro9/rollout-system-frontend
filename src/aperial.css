@@ -236,10 +236,8 @@ input[type="month"],
 input[type="week"],
 input[type="datetime-local"],
 input[type="search"],
-input[type="reset"],
-input[type="checkbox"],
-select {
-  width: 200px;
+input[type="reset"] {
+  width: 192px;
   padding: 4px 0px;
   margin: 8px;
   
@@ -270,8 +268,7 @@ select {
   input[type="week"]:focus,
   input[type="datetime-local"]:focus,
   input[type="search"]:focus,
-  input[type="reset"]:focus,
-  select:focus {
+  input[type="reset"]:focus {
     border-bottom: 2px solid rgb(33, 150, 243);
   }
 ::-webkit-input-placeholder {
@@ -305,7 +302,7 @@ textarea {
 input[type="checkbox"], input[type="radio"] {
   width: 16px;
   height: 16px;
-  margin: 0px 8px 0px 0px;
+  margin: 8px;
   
   box-shadow: none;
 
