@@ -25,16 +25,21 @@
             <th>Descrição</th>
             <th>Comentário</th>
             <th>Status</th>
-            <th>Ações</th>
+            <th></th>
           </tr>
           <tr v-for="(demanda, index) in filteredTasks" :key="index">
-            <td>{{ demanda.descricao }}</td>
-            <td>{{ demanda.comentario }}</td>
+            <td>
+              {{ demanda.descricao }}
+              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="editTaskDescription(index)">edit</i>
+            </td>
+            <td>
+              {{ demanda.comentario }}
+              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="editTaskComment(index)">edit</i>
+            </td>
             <td>
               <div class="status theme-red" v-on:click="updateStatus(index)"> {{ demanda.status }} </div>
             </td>
             <td>
-              <i class="material-icons icon-button" style="font-size: 18px">edit</i>
               <i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteTask(index)">delete</i>
             </td>
           </tr>
@@ -113,6 +118,26 @@
       deleteTask(index) {
         if (confirm("Deseja excluir essa demanda?")) {
           this.demandas.splice(index, 1);
+        }
+      },
+      editTaskDescription(index) {
+        let newDescription = prompt("Nova descrição:")
+
+        if (newDescription.replace(/\s/g, "") !== "") {
+          this.demandas[index].descricao = newDescription
+        }
+        else {
+          alert("Descrição iválida")
+        }
+      },
+      editTaskComment(index) {
+        let newComment = prompt("Novo comentário:")
+
+        if (newComment.replace(/\s/g, "") !== "") {
+          this.demandas[index].comentario = newComment
+        }
+        else {
+          alert("Comentário iválido")
         }
       },
       updateStatus(index) {
