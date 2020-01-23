@@ -29,12 +29,10 @@
           </tr>
           <tr v-for="(demanda, index) in filteredTasks" :key="index">
             <td>
-              {{ demanda.descricao }}
-              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="editTaskDescription(index)">edit</i>
+              <input class="editable" type="text" v-model="demanda.descricao">
             </td>
             <td>
-              {{ demanda.comentario }}
-              <i class="material-icons icon-button" style="font-size: 18px" v-on:click="editTaskComment(index)">edit</i>
+              <input class="editable" type="text" v-model="demanda.comentario">
             </td>
             <td>
               <div class="status theme-red" v-on:click="updateStatus(index)"> {{ demanda.status }} </div>
@@ -120,26 +118,6 @@
           this.demandas.splice(index, 1);
         }
       },
-      editTaskDescription(index) {
-        let newDescription = prompt("Nova descrição:")
-
-        if (newDescription.replace(/\s/g, "") !== "") {
-          this.demandas[index].descricao = newDescription
-        }
-        else {
-          alert("Descrição iválida")
-        }
-      },
-      editTaskComment(index) {
-        let newComment = prompt("Novo comentário:")
-
-        if (newComment.replace(/\s/g, "") !== "") {
-          this.demandas[index].comentario = newComment
-        }
-        else {
-          alert("Comentário iválido")
-        }
-      },
       updateStatus(index) {
         let status = document.getElementsByClassName("status")
 
@@ -184,6 +162,17 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+  }
+  .editable {
+    border-bottom: none;
+    cursor: text;
+    text-align: center;
+  }
+  .editable:hover {
+    border-bottom: 1px solid currentColor;
+  }
+  .editable:focus {
+    border-bottom: 2px solid rgb(33, 150, 243);
   }
   .status {
     width: 124px;

@@ -4,6 +4,7 @@
       <router-link to="/Home">
         <h5><strong>ROLLOUT</strong>SYSTEM</h5>
       </router-link>
+      <button class="theme-red">Logout</button>
     </header>
                   
     <main>
@@ -61,6 +62,7 @@
   }
   header, main, footer {
     flex-shrink: 0;
+    justify-content: space-between;
   }
 
   /* this will be used to blur the background of some components */
