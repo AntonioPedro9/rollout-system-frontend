@@ -65,16 +65,15 @@ a {
 .link {
   text-decoration: underline;
 }
-  .link:hover {
-    background-color: rgba(192, 192, 192, 0.5);
-  }
 
-
+.link:hover {
+  background-color: rgba(192, 192, 192, 0.5);
+}
 
 header {
   padding: 8px;
   display: flex;
-  align-itens: center;
+  align-items: center;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
   text-align: center;
 }
@@ -84,7 +83,6 @@ main {
 .card {
   padding: 8px;
   margin: 8px;
-
   color: #444;
   background-color: #FFF;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.24);
@@ -199,7 +197,7 @@ button, input[type="submit"], input[type="button"] {
       margin: 0px;
     }
 .icon-button {
-  margin: 8px;
+  margin: 4px;
   
   border-radius: 50%;
 

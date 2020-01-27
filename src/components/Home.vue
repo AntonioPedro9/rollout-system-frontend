@@ -1,6 +1,6 @@
 <template>
   <div class="cards">
-    <div class="card" v-for="(projeto, index) in projetos" :key="projeto.id">
+    <div class="card" v-for="(projeto, index) in projetos" :key="index">
       <div class="card-header">
         <h5>{{ projeto.nome }}</h5>
         <div>
@@ -17,17 +17,18 @@
       <p>{{ projeto.concluidas }} concluidas</p>
       <button class="theme-blue" v-on:click="$router.push('/sites')">Abrir</button>
     </div>
-    <div id="blur-div" v-show="showCreateProjectWindow">
-      <div class="card create-project">
+    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
+      <i class="material-icons">add</i>
+    </button>
+    <!-- Create project window: -->
+    <div class="blur-div" v-show="showCreateProjectWindow">
+      <div class="card creation-window">
         <h5>Novo projeto</h5>
         <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
         <button class="theme-blue" v-on:click="createProject()">Criar</button>
         <button class="theme-red" v-on:click="showCreateProjectWindow = false">Cancelar</button>
       </div>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
-      <i class="material-icons">add</i>
-    </button>
   </div>
 </template>
 
@@ -40,9 +41,9 @@
         nome: '',
         
         projetos: [
-          { id: 0, nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
-          { id: 1, nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
-          { id: 2, nome: 'Minas 2018', estacoes: 6, concluidas: 0 },
+          { nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
+          { nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
+          { nome: 'Minas 2018', estacoes: 6, concluidas: 0 },
         ]
       }
     },
@@ -83,15 +84,6 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  #blur-div {
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    bottom: 0px;
-    left: 0px;
-    background-color: rgba(0, 0, 0, 0.64);
-    backdrop-filter: blur(2px);
-  }
   .card .card-header {
     display: flex;
     justify-content: space-between;
@@ -114,12 +106,6 @@
   }
   .card-options:hover { 
     display: block;
-  }
-  .create-project {
-    position: fixed;
-    top: 30vh;
-    left: calc(50vw - 120px);
-    z-index: 1;
   }
   .fab {
     position: fixed;
