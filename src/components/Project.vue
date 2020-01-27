@@ -178,7 +178,6 @@
     width: 124px;
     padding: 4px 8px;
     border-radius: 2px;
-
     cursor: pointer;
 
     -webkit-user-select: none;
