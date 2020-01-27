@@ -119,8 +119,9 @@
     opacity: 0;
   }
   .errorAlert {
+    padding: 8px;
+    margin: 8px;
     background-color: #f99;
-    padding: 10px;
-    border-radius: 4px;
+    border-radius: 2px;
   }
 </style>

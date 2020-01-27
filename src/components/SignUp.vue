@@ -161,14 +161,16 @@
     font-weight: 600;
   }
   .errorAlert {
-    border-radius: 4px;
+    padding: 8px;
+    margin: 8px;
     background-color: #f99;
-    padding: 10px;
+    border-radius: 2px;
   }
   .aceptedAlert {
-    border-radius: 4px;
+    padding: 8px;
+    margin: 8px;
     background-color: #99ff9e;
-    padding: 10px;
+    border-radius: 2px;
   }
   .fade-enter, .fade-leave-to {
     opacity: 0;
