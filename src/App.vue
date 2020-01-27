@@ -5,6 +5,7 @@
         <h5><strong>ROLLOUT</strong>SYSTEM</h5>
       </router-link>
       <button class="theme-red" v-on:click="logout" v-if="isAuthenticated">Logout</button>
+
     </header>
                   
     <main>
@@ -110,6 +111,7 @@
     flex-shrink: 0;
     justify-content: space-between;
   }
+
   /* this will be used to blur the background of some components */
   .blur-div {
     position: fixed;
@@ -120,6 +122,7 @@
     background-color: rgba(0, 0, 0, 0.64);
     backdrop-filter: blur(2px);
   }
+
   /* this will be used in other components as a creation window */
   .creation-window {
     position: fixed;
