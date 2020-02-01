@@ -5,6 +5,7 @@ import SignUp from '@/components/SignUp.vue'
 import Home from '@/components/Home.vue'
 import Sites from '@/components/Sites.vue'
 import Project from '@/components/Project.vue'
+import VerifyToken from '@/components/verifyToken.vue'
 
 Vue.use(Router)
 Vue.config.devtools = false;        //Desativando mensagem de devTools no console do client
@@ -17,5 +18,7 @@ export default new Router({
     { path: '/home', name: 'Home', component: Home },
     { path: '/sites', name: 'Sites', component: Sites },
     { path: '/sites/project', name: 'Project', component: Project },
+    { path: '/verifyToken', name: 'VerifyToken', component: VerifyToken },
+    { path: '/', redirect: '/login' },
   ]
 })

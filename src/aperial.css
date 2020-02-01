@@ -62,6 +62,9 @@ a {
   text-decoration: none;
   cursor: pointer;
 }
+a:hover{
+  text-decoration: underline;
+}
 .link {
   text-decoration: underline;
 }
@@ -89,6 +92,10 @@ main {
   border-radius: 2px;
 
   text-align: left;
+  transition: transform .25s;
+}
+.card:hover{
+  transform: scale(1.03);
 }
 footer {
   padding: 8px;
@@ -391,6 +398,10 @@ canvas {
 .theme-blue {
   color: #FFF;
   background-color: rgb(33, 150, 243);
+}
+.theme-blue:disabled {
+  opacity: .5;
+  cursor: not-allowed;
 }
 .theme-light-blue {
   color: #444;

@@ -68,10 +68,8 @@
         estacao: 'Estação X',
         escopo: 'Escopo X',
         localidade: 'Localidade X',
-
         search: '',
         showCreateTaskWindow: false,
-
         descricao: '',
         comentario: '',
         
@@ -120,7 +118,6 @@
       },
       updateStatus(index) {
         let status = document.getElementsByClassName("status")
-
         if (status[index].classList == "status theme-red") {
           status[index].classList.replace("theme-red", "theme-blue")
           status[index].innerHTML = "Em andamento"
@@ -179,7 +176,6 @@
     padding: 4px 8px;
     border-radius: 2px;
     cursor: pointer;
-
     -webkit-user-select: none;
     -ms-user-select: none;
     -moz-user-select: none;

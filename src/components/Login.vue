@@ -3,15 +3,16 @@
     <div class="card">
       <h5>Login</h5>
       <div onpaste="return false" onselectstart="return false;">
-        <input name="Matricula" type="text" placeholder="Matrícula..." v-model="mat" autocomplete="off" required autofocus/>
-        <input id="password" name="Senha" type="password" placeholder="Senha..." v-model="password" autocomplete="off" required/>
+        <input name="Matricula" type="text" placeholder="Matrícula..." v-model="mat" v-on:keyup.enter="login()" autocomplete="off" required autofocus/>
+        <input id="password" name="Senha" type="password" placeholder="Senha..." v-model="password" v-on:keyup.enter="login()" autocomplete="off" required/>
         <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword()">remove_red_eye</i>
         <input name="LembrarUsuario" type="checkbox" value="LembrarUsuario" id="remindUser" v-model="remindUser">
-        <label for="remindUser">Lembrar Usuário</label><br>
+        <label for="remindUser">Mantenha-me Conectado</label><br>
         <input class="theme-blue" type="submit" @click="login()" value="Conectar"/>
         <transition :name="computedTransition">
           <div class="errorAlert" v-if="!errorHandling">{{ messageError }}</div>
         </transition>
+        <h6 v-if="sendToken" @click="resendToken()"><a>Reenviar token</a></h6>
       </div>
       <h6>Não tem uma conta? <a v-on:click="$router.push('/signup')">Cadastre-se</a></h6>
     </div>
@@ -22,16 +23,19 @@
   import axios from 'axios';
   import jwt from 'jwt-simple';
   const key = 'key';
+  const rootPath = "http://localhost:3000/";
+
   export default {
     name: 'Login',
     data: () => {
       return {
-        mat: '',
-        password: '',
+        mat: '11821',
+        password: 'senhateste',
         errorHandling: true, 
         transitionError: true,
         messageError: '',
-        remindUser: false
+        remindUser: false,
+        sendToken: false
       }
     },
     mounted() {
@@ -39,13 +43,16 @@
       if(localStorage.userData){
         let token = localStorage.userData;
         let userDataDecoded = jwt.decode(token, key);
-        if (new Date(userDataDecoded.expire) > new Date()) {          // Se data do token for maior que a data atual, token ainda e valido
-            this.mat = userDataDecoded.matriculaToken;
-            this.password = userDataDecoded.senhaToken;
-            this.login();
+        // if(Date(userDataDecoded.expire) < Date.now()){
+        if (userDataDecoded.expire > Date.now()) {          // Se data do token for maior que a data atual, token ainda e valido
+            // this.mat = userDataDecoded.matriculaToken;
+            // this.password = userDataDecoded.senhaToken;
+            // this.login();
         } else {
+          localStorage.clear();
+          this.loggedin = false;
           this.messageError = "Login expirado. Conecte novamente.";
-          thisInside.errorHandling = false;
+          this.errorHandling = false;
         }
       }
     },
@@ -64,27 +71,39 @@
           this.messageError = "O campo Senha precisa ser preenchido";
           thisInside.errorHandling = false;
         }else{
-          axios.post('http://localhost:3000/usuario/login/', {Matricula: this.mat, Senha: this.password})
+          axios.post(rootPath + 'usuario/login/', {Matricula: this.mat, Senha: this.password})
           .then(function(response){
             if(response.data.authorizedLogin){
               thisInside.errorHandling = true;
               console.log("loginResponse:" + response.data.authorizedLogin);
               if(thisInside.remindUser){
+                // var expireDate = (new Date().getTime()) + (60000 * 60 * 24 * 7);                // Token configurado para expirar em 1 semana
+                var expireDate = (new Date().getTime()) + (60000 * 1 / 2 / 2);                  // Token configurado para expirar em 15 segundos
                 const loginToken = jwt.encode({
                   matriculaToken: thisInside.mat,
                   senhaToken: thisInside.password,
-                  expire: Date.now() + (60 * 60 * 1000 * 24 * 7)                // Token configurado para expirar em 1 semana
+                  // expire: Date(Date(Date.now()) + (60 * 60 * 1000 * 24 * 7))                // Token configurado para expirar em 1 semana
+                  expire: expireDate
                 }, key);
                 localStorage.userData = loginToken;
               }else{
                 localStorage.loggedin = true;
                 localStorage.username = thisInside.mat;
               }
-              window.location.href = "/home";
+              thisInside.$router.push('/home')
+              // window.location.href = "/home";
             }else{
               console.log("loginResponse: " + response.data.authorizedLogin);
-              thisInside.errorHandling = false;
-              thisInside.messageError = "Usuário ou senha incorretos"
+              if(response.data.loginError != null){
+                if(response.data.loginError == "Conta não verificada"){
+                  thisInside.sendToken = true;
+                }
+                thisInside.errorHandling = false;
+                thisInside.messageError = response.data.loginError;  
+              }else{
+                thisInside.errorHandling = false;
+                thisInside.messageError = "Usuário ou senha incorretos";
+              }
             }
           })
         }
@@ -98,6 +117,14 @@
           val.type = "password";
           return true;
         }
+      },
+      resendToken(){
+        console.log(this.mat)
+        console.log(this.password)
+        axios.post(rootPath + 'usuario/sendTokenAgain', {Matricula: this.mat, Senha: this.password})
+        .then(function(response){
+          console.log(response);
+        })
       }
     }
   }

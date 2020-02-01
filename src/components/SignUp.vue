@@ -5,7 +5,7 @@
       <div onpaste="return false" onselectstart="return false;">
         <input name="Nome" type="text" placeholder="Nome..." autocomplete="off" v-model="nome" required/>
         <input name="Email" type="text" placeholder="Email..." autocomplete="off" v-model="email" />
-        <select name="selectDomain" v-model="selectBox" required>
+        <select class="selectBox" name="selectDomain" v-model="selectBox" required>
           <option value="" disabled>Tipo de email</option>
           <option name="emailInstitucional" value="algarMail">@algartelecom.com.br</option>
           <option name="outro" value="other">Outro</option>
@@ -15,7 +15,7 @@
         <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword1()">remove_red_eye</i>
         <input id="password2" name="ConfirmarSenha" type="password" placeholder="Confirmar senha..." autocomplete="off" v-model="confirmarSenha" required/>
         <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword2()">remove_red_eye</i>
-        <input class="theme-blue" type="submit" @click="signup()" value="Cadastrar"/>
+        <input class="theme-blue" type="submit" @click="signup()" value="Cadastrar" :disabled="submitButton"/>
         <transition :name="computedTransitionError">
           <div class="errorAlert" v-if="!errorHandling">{{ messageError }}</div>
         </transition>
@@ -34,12 +34,13 @@
     name: 'SignUp',
     data: () => {
       return {
-        nome: 'gabriel',
-        email: 'gabrielrbernardi',
-        matricula: '11832',
-        senha: 'senhateste',
-        confirmarSenha: 'senhateste',
+        nome: '',
+        email: '',
+        matricula: '',
+        senha: '',
+        confirmarSenha: '',
         selectBox: '',
+        submitButton: false,
         errorHandling: true, 
         transitionError: true,
         messageError: '',
@@ -58,6 +59,7 @@
     },
     methods: {
       signup(){
+        this.submitButton = true;    
         let thisInside = this;
         var fields = [];
         var qtdFieldsNull = 0;
@@ -92,8 +94,8 @@
           thisInside.errorHandling = false;
           thisInside.aceptedHandling = false;
         }else{
-          // console.log(this.selectDomain)
-          axios.post("http://localhost:3000/usuario/create/", {Nome: this.nome, Matricula: this.matricula, Email: this.email, Senha: this.senha, ConfirmarSenha: this.confirmarSenha, selectDomain: this.selectDomain})
+          // console.log(this.selectBox)
+          axios.post("http://localhost:3000/usuario/create", {Nome: this.nome, Matricula: this.matricula, Email: this.email, Senha: this.senha, ConfirmarSenha: this.confirmarSenha, selectDomain: this.selectBox})
           .then(function(response){
             // console.log(response)
             if(response.data.emailEnviado){
@@ -116,13 +118,14 @@
               thisInside.errorHandling = false;
               thisInside.aceptedHandling = false;
               thisInside.messageError = "Email inválido";
-            }else{
+            }else{  //email nao enviado
               thisInside.errorHandling = false;
               thisInside.aceptedHandling = false;
               thisInside.messageError = "Email não enviado"
             }
           })
         }
+        this.submitButton = false;
       },
       showPassword1(){
         var val = document.getElementById("password1");
@@ -175,5 +178,30 @@
   }
   .fade-enter-active, .fade-leave-active {
     transition: .3s;
+  }
+  .selectBox {
+    padding: 4px 0px;
+    margin: 8px;
+
+    color: currentColor;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid currentColor;
+    border-radius: 0px;
+    outline: none;
+
+    font-size: 16px;
+
+    -webkit-transition: all 0.2s;
+    -moz-transition: all 0.2s;
+    -ms-transition: all 0.2s;
+    -o-transition: all 0.2s;
+    transition: all 0.2s;
+  }
+  .selectBox:focus {
+    border-bottom: 2px solid rgb(33, 150, 243);
+  }
+  .selectBox:hover {
+    cursor: pointer;
   }
 </style>
