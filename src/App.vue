@@ -24,7 +24,6 @@
   import Home from './components/Home.vue'
   import Sites from './components/Sites.vue'
   import Project from './components/Project.vue'
-
   import axios from 'axios';
   import jwt from 'jwt-simple';
   const key = 'key';
@@ -38,7 +37,6 @@
       Sites,
       Project,
     },
-
     data: function() {
       return {
         isAuthenticated: false
@@ -111,7 +109,6 @@
     flex-shrink: 0;
     justify-content: space-between;
   }
-
   /* this will be used to blur the background of some components */
   .blur-div {
     position: fixed;
@@ -122,7 +119,6 @@
     background-color: rgba(0, 0, 0, 0.64);
     backdrop-filter: blur(2px);
   }
-
   /* this will be used in other components as a creation window */
   .creation-window {
     position: fixed;
