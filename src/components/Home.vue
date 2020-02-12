@@ -1,89 +1,218 @@
 <template>
   <div class="cards">
-    <div class="card" v-for="(projeto, index) in projetos" :key="index">
+    <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="projectEmpty">
+      <a>Não há projetos</a>
+    </div>
+    <div class="card" v-for="(projeto, index) in projetos" v-bind:key="index">
       <div class="card-header">
-        <h5>{{ projeto.nome }}</h5>
+        <h5>{{ projeto.Nome }}</h5>
         <div>
           <i class="material-icons icon-button options-button">more_vert</i>
           <div class="card card-options">
             <ul>
-              <li v-on:click="renameProject(index)">Renomear</li>
-              <li v-on:click="deleteProject(index)">Deletar</li>
+              <li v-on:click="showRenameProjectWindow = true; idProjectRename = projeto.id; getStatus()">Renomear</li>
+              <li v-on:click="deleteProject(projeto.id)">Deletar</li>
             </ul>
           </div>
         </div>
       </div>
-      <p>{{ projeto.estacoes }} estações</p>
-      <p>{{ projeto.concluidas }} concluidas</p>
+      <p>{{ projeto.Escopo }}</p>
+      <p>Id do projeto: {{ projeto.id }}</p>
+      <p>Status do projeto: {{transformStatusId(projeto.statusId)}}</p>
+      <!-- <p>{{ projeto.concluidas }} concluidas</p> -->
+      <!-- <button class="theme-blue" v-on:click="$router.push('/sites/q?id=' + projeto.id)">Abrir</button> -->
       <button class="theme-blue" v-on:click="$router.push('/sites')">Abrir</button>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true">
+    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true, getStatus()">
       <i class="material-icons">add</i>
     </button>
     <!-- Create project window: -->
-    <div class="blur-div" v-show="showCreateProjectWindow">
+    <div class="blur-div" v-if="showCreateProjectWindow">
       <div class="card creation-window">
         <h5>Novo projeto</h5>
         <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
+        <input type="text" placeholder="Escopo do projeto..." v-model="escopo"><br>
+        <!-- <input type="text" placeholder="Status do projeto..." v-model="statusId"><br> -->
+        <select class="selectBox" style="width: 192px;" v-model="selectCreation">
+          <option value="" disabled>Status</option>
+          <option v-for="(status, index) in statuses" :key="index">{{status.Descricao}}</option>
+        </select><br>
         <button class="theme-blue" v-on:click="createProject()">Criar</button>
         <button class="theme-red" v-on:click="showCreateProjectWindow = false">Cancelar</button>
       </div>
     </div>
+    <div class="blur-div" v-if="showRenameProjectWindow">
+      <div class="card creation-window">
+        <h5>Atualizar projeto</h5>
+        <input type="text" placeholder="Nome do projeto..." v-model="nomeRename" autofocus><br>
+        <input type="text" placeholder="Escopo do projeto..." v-model="escopoRename"><br>
+        <!-- <input type="text" placeholder="Status do projeto..." v-model="statusIdRename"><br> -->
+        <select class="selectBox" style="width: 192px;" v-model="selectRename">
+          <option value="" disabled>Status</option>
+          <option v-for="(status, index) in statuses" :key="index">{{status.Descricao}}</option>
+        </select><br>
+        <button class="theme-blue" v-on:click="renameProject()">Atualizar</button>
+        <button class="theme-red" v-on:click="showRenameProjectWindow = false">Cancelar</button>
+      </div>
+    </div>
   </div>
+
 </template>
 
 <script>
+  import axios from 'axios';
+  let baseUrl = 'http://localhost:3000/'
   export default {
     name: 'Home',
     data: () => {
       return {
         showCreateProjectWindow: false,
+        showRenameProjectWindow: false,
         nome: '',
-        
-        projetos: [
-          { nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
-          { nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
-          { nome: 'Minas 2018', estacoes: 6, concluidas: 0 },
-        ]
+        escopo: '',
+        statusId: '',
+        projetos: '',
+        projectEmpty: false,
+        nomeRename: '',
+        escopoRename: '',
+        statusIdRename: '',
+        idProjectRename: '',
+        statuses: '',
+        selectCreation: '',
+        selectRename: '',
+        // projetos: [
+        //   { nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
+        //   { nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
+        //   { nome: 'Minas 2018', estacoes: 6, concluidas: 0 },
+        // ]
       }
+    },
+    mounted(){
+      this.getProjetos();
     },
     methods: {
       createProject() {
-        if (this.nome.replace(/\s/g, "") !== "") {
-          this.projetos.push({
-            id: this.projetos.length + 1,
-            nome: this.nome,
-            estacoes: 0,
-            concluidas: 0,
-          });
+        let thisInside = this;
+        var statusID = '';
+        // console.log(this.nome+this.escopo+this.statusId)
+        if (this.nome.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.selectCreation.replace(/\s/g, "") !== "" && this.selectCreation != '') {
+          if(this.selectCreation.toLowerCase() == 'aprovado'){
+            statusID = 1;
+          }else if(this.selectCreation.toLowerCase() == 'reprovado'){
+            statusID = 2;
+          }else if(this.selectCreation.toLowerCase() == 'em analise'){
+            statusID = 3;
+          }
+          axios.post(baseUrl+'projeto/create', {Nome: this.nome, Escopo: this.escopo, statusId: statusID})
+          .then(function(response){
+            if(response.data.createdProject){
+              // console.log(true);
+              thisInside.getProjetos();
+            }else{
+              // console.log(false);
+              thisInside.getProjetos();
+            }
+          })
+          console.log(this.selectCreation)
           this.showCreateProjectWindow = false
-          this.nome = ''
+        }else{
+          alert("Preencha todos os campos")
         }
-        else {
-          alert("Nome iválido")
-        }
+        // else {
+        //   alert("Nome inválido")
+        //   this.showCreateProjectWindow = false;
+        // }
       },
-      deleteProject(index) {
+      deleteProject(projectId) {
+        let thisInside = this;
         if (confirm("Deseja excluir esse projeto?")) {
-          this.projetos.splice(index, 1)
+          axios.delete(baseUrl + 'projeto/'+projectId+'/delete')
+          .then(function(response){
+            if(response.data.delectedProject){
+              thisInside.getProjetos();
+            }else{
+              console.log("erro")
+            }
+          })
+          // this.projetos.splice(projectId, 1)
         }
       },
-      renameProject(index) {
-        let newName = prompt("Novo nome:")
-
-        if (newName.replace(/\s/g, "") !== "") {
-          this.projetos[index].nome = newName
+      renameProject() {
+        // console.log(this.idProjectRename)
+        let thisInside = this;
+        let statusID = '';
+        if (this.nomeRename.replace(/\s/g, "") !== "" && this.escopoRename.replace(/\s/g, "") !== "" && this.selectRename != '') {
+          if(this.selectRename.toLowerCase() == 'aprovado'){
+            statusID = 1;
+          }else if(this.selectRename.toLowerCase() == 'reprovado'){
+            statusID = 2;
+          }else if(this.selectRename.toLowerCase() == 'em analise'){
+            statusID = 3;
+            console.log("em analise")
+          }else{
+            statusID = 0;
+          }
+          axios.put(baseUrl + 'projeto/' +this.idProjectRename+ '/update', {Nome: this.nomeRename, Escopo: this.escopoRename, statusId: statusID})
+          .then(function(response){
+            console.log(response.data)
+            if(response.data.updatedProject){
+              // console.log(response.data.updatedProject)
+              thisInside.getProjetos()
+              thisInside.nomeRename = '';
+              thisInside.escopoRename = '';
+              thisInside.selectRename = '';
+              statusID = '';
+            }else{
+              console.log(response.data.updatedProject)
+            }
+            thisInside.showRenameProjectWindow = false;
+          })
+          // this.showRenameProjectWindow = false;
+        }else{
+          alert("Preencha todos os campos");
         }
-        else {
-          alert("Nome iválido")
+      },
+      getProjetos(){
+        let thisInside = this;
+        axios.get(baseUrl+'projetos/1')
+        .then(function(response){
+          if(response.data.length == 0){
+            thisInside.projetos = '';
+            thisInside.projectEmpty = true;
+          }else{
+            thisInside.projetos = response.data;
+            thisInside.projectEmpty = false;
+          }
+        })
+      },
+      getStatus(){
+        let thisInside = this;
+        let count = 0;
+        axios.get(baseUrl + 'statuses/1')
+        .then(function(response){
+          thisInside.statuses = response.data;
+        })
+      },
+      transformStatusId(statusId){
+        if(statusId == 1){
+          return "Aprovado";
+        }else if(statusId == 2){
+          return "Reprovado";
+        }else if(statusId == 3){
+          return "Em análise";
+        }else{
+          return "Error 404";
         }
-      }
+      },
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+  .card:hover{
+    transform: scale(1.03);
+  }
   .card .card-header {
     display: flex;
     justify-content: space-between;
@@ -106,6 +235,7 @@
   }
   .card-options:hover { 
     display: block;
+    transform: none;
   }
   .fab {
     position: fixed;

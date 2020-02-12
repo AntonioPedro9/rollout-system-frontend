@@ -1,19 +1,32 @@
 <template>
   <div class="container">
     <header class="theme-light">
-      <router-link to="/home">
+      <router-link to="/home" v-if="isAuthenticated">
         <h5><strong>ROLLOUT</strong>SYSTEM</h5>
       </router-link>
-      <button class="theme-red" v-on:click="logout" v-if="isAuthenticated">Logout</button>
+      
+      <router-link to="/login" v-else>
+        <h5><strong>ROLLOUT</strong>SYSTEM</h5>
+      </router-link>
 
+    
+
+      <!-- <a href="/home">
+        <h5><strong>ROLLOUT</strong>SYSTEM</h5>
+      </a> -->
+      <button class="theme-green" v-on:click="$router.push('/verifyToken/teste')" v-if="!isAuthenticated">Token Verify</button>
+      <button class="theme-red" v-on:click="logout" v-if="isAuthenticated">Logout</button>
     </header>
                   
     <main>
-      <router-view></router-view>
+      <i class="material-icons icon-button" style="font-size: 20px;" @click="$router.go(-1)" v-if="isAuthenticated">arrow_back</i>
+      <router-view>
+
+      </router-view>
     </main>
                   
     <footer class="theme-dark">
-      <p>© 2020 - Algar Telecom</p>
+      <p>&copy; 2020 - Algar Telecom</p>
     </footer>
   </div>
 </template>
@@ -23,7 +36,9 @@
   import SignUp from './components/SignUp.vue'
   import Home from './components/Home.vue'
   import Sites from './components/Sites.vue'
-  import Project from './components/Project.vue'
+  import Atividade from './components/Atividade.vue'
+  import VerifyToken from './components/verifyToken.vue'
+
   import axios from 'axios';
   import jwt from 'jwt-simple';
   const key = 'key';
@@ -35,50 +50,97 @@
       SignUp,
       Home,
       Sites,
-      Project,
+      Atividade,
+      VerifyToken,
     },
     data: function() {
       return {
-        isAuthenticated: false
+        isAuthenticated: false,
       }
     },
-    mounted () {
-      var currentPath = window.location.pathname;
-      if(localStorage.userData || localStorage.loggedin){
-        if(currentPath == '/'){
-          window.location.href = "/home";
-        }else if(currentPath == '/login' || currentPath == '/signup'){
-          window.location.href = "/home";
-        }
-        this.isAuthenticated = true;
-      }else if(currentPath == '/login' || currentPath == "/signup"){
-        // console.log("ta aqui");
-      }else{
-        window.location.href = "/login";
-      }
+    beforeUpdate () {
+      this.checkLogin();
+    },
+    mounted(){
+      // this.logoutClose();
+      this.checkLogin();
     },
     methods: {
+      checkLogin: function (){
+        const thisInside = this;
+        var currentPath = (window.location.pathname).toLowerCase();
+        
+        if(localStorage.loggedin){      //usuario fez login sem manter-se conectado
+          if(currentPath == '/' || currentPath == '/login' || currentPath == '/signup'){
+            // window.location.href = '/home';
+            thisInside.$router.push('/home')
+          }else{
+
+          }
+          this.isAuthenticated = true;
+        }
+
+        else if(localStorage.userData){
+          let token = localStorage.userData
+          let userDataDecoded = jwt.decode(token, key);
+          let dataToken = userDataDecoded.expire;
+
+          if(dataToken < Date.now()){
+            this.isAuthenticated = false;
+            if(currentPath == '/login' || currentPath == '/signup'){
+              
+            }else{
+              this.logout();
+            }
+          }else if(currentPath == '/login' || currentPath == '/signup' || currentPath == '/'){
+            // window.location.href = '/home';
+            thisInside.$router.push('/home');
+          }else if(currentPath == '/home'){
+            
+          }
+          this.isAuthenticated = true;
+        }else if(currentPath.includes('/verifytoken')){
+          
+        }
+        else if(localStorage.loggedin == null && localStorage.userData == null){
+          if(currentPath != '/login' && currentPath != '/signup' && currentPath != '/verifytoken'){
+            // window.location.href = '/login';
+            thisInside.$router.push('/login')
+          }
+        }
+      },
       logout: function () {
+        const thisInside = this;
         if(localStorage.userData){
           let token = localStorage.userData;
           let userDataDecoded = jwt.decode(token, key);
-          axios.post('http://localhost:3000/usuario/logout', {Matricula: userDataDecoded.matriculaToken})    //substituir no back-end por algo como express-session para conseguir a infomação de matricula do usuario
+          axios.post('http://localhost:3000/usuario/logout', {Matricula: userDataDecoded.matriculaToken})
           .then(function(response){
             if(!response.data.loggedin){
               localStorage.clear();
-              window.location.href = "/login";
+              thisInside.$router.push('/login')
+              window.location.reload()
+              // window.location.href = "/login";
             }
           })
         }else{
-          axios.post('http://localhost:3000/usuario/logout', {Matricula: localStorage.username})    //substituir no back-end por algo como express-session para conseguir a infomação de matricula do usuario
+          axios.post('http://localhost:3000/usuario/logout', {Matricula: localStorage.username})
           .then(function(response){
             if(!response.data.loggedin){
               localStorage.clear();
-              window.location.href = "/login";
+              thisInside.$router.push('/login')
+              window.location.reload()
+              // window.location.href = "/login";
             }
           })
         }
-      }
+      },
+      // logoutClose: function(){
+      //   let type = PerformanceNavigation.TYPE_RELOAD;
+      //   if(type)
+      //     localStorage.clear();
+      //   console.log(type);
+      // }
     }
   }
 </script>
@@ -118,6 +180,7 @@
     left: 0px;
     background-color: rgba(0, 0, 0, 0.64);
     backdrop-filter: blur(2px);
+    z-index: 1;
   }
   /* this will be used in other components as a creation window */
   .creation-window {

@@ -65,6 +65,10 @@ a {
 .link {
   text-decoration: underline;
 }
+.nonLink{
+  cursor: default;
+  text-decoration: none;
+}
 
 .link:hover {
   background-color: rgba(192, 192, 192, 0.5);
@@ -89,7 +93,11 @@ main {
   border-radius: 2px;
 
   text-align: left;
+  transition: transform .25s;
 }
+/* .card:hover{
+  transform: scale(1.03);
+} */
 footer {
   padding: 8px;
   box-shadow: 0px -2px 4px rgba(0, 0, 0, 0.24);
@@ -392,6 +400,10 @@ canvas {
   color: #FFF;
   background-color: rgb(33, 150, 243);
 }
+.theme-blue:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
 .theme-light-blue {
   color: #444;
   background-color: rgb(3, 169, 244);
@@ -443,4 +455,29 @@ canvas {
 .theme-blue-gray {
   color: #FFF;
   background-color: rgb(96, 125, 139);
+}
+.selectBox {
+  padding: 4px 0px;
+  margin: 8px;
+
+  color: currentColor;
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0px;
+  outline: none;
+
+  font-size: 16px;
+
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  -ms-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.selectBox:focus {
+  border-bottom: 2px solid rgb(33, 150, 243);
+}
+.selectBox:hover {
+  cursor: pointer;
 }
