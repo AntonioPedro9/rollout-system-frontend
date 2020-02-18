@@ -1,21 +1,22 @@
 <template>
   <div class="cards">
     <div style="display: flex; flex-direction: column;">
-      <div class="card">
-        <h5>Nome do projeto</h5>
+      <!-- <div class="card">
+        <h5>Nome da Demanda</h5>
         <label class="input-label">Estação</label><input type="text" v-model="estacaoResumo"/>
         <label class="input-label">Escopo</label><input type="text" v-model="escopoResumo"/>
         <label class="input-label">Localidade</label><input type="text" v-model="localidadeResumo"/>
-      </div>
-      <div class="card">
+      </div> -->
+      <!-- <div class="card">
         <div class="pie-chart" :style="chartStyle"></div>
-      </div>
+      </div> -->
     </div>
     <div>
       <div class="card">
         <div class="card-header">
           <h5>Demandas</h5>
-          <div class="search-box">
+          <div v-if="renameSubmit"><i class="material-icons icon-button" style="font-size: 18px" v-on:click="updateAtividade()">done_outline</i></div>
+          <div v-if="!renameSubmit" class="search-box">
             <i class="material-icons">search</i>
             <input type="text" v-model="search" placeholder="Buscar..."/>
           </div>
@@ -28,25 +29,25 @@
             <th>Status</th>
             <th></th>
           </tr>
-            <tr ><i class="material-icons icon-button" style="font-size: 18px" v-if="renameSubmit" v-on:click="updateAtividade()">done_outline</i></tr>
-          <tr class="site" v-for="(demanda, index) in demandas" :key="index" @click="enableEdit()">
-            <td><input class="editable" type="text" v-model="demanda.Nome"></td>
-            <td><input class="editable" type="text" v-model="demanda.Escopo"></td>
-            <td><input class="editable" type="text" v-model="demanda.Tipo"></td>
-            <td><div class="status theme-red" v-on:click="updateStatus(index, demanda.statusId)"> {{ demanda.statusId }} </div></td>
-            <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteTask(index)">delete</i></td>
+          <tr class="site" v-for="(demanda, index) in demandas" :key="index">
+            <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Nome" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
+            <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Escopo" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
+            <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Tipo" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
+            <!-- <td v-if="true"><input class="editable" type="text" v-model="demanda.estacaoId"></td> -->
+            <td><div class="status theme-red" @click="updateStatus(index, demanda.statusId)"> {{ demanda.statusId }} </div></td>
+            <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteTask(demanda.id)">delete</i></td>
           </tr>
         </table>
       </div>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateTaskWindow = true">
+    <button class="fab theme-blue" @click="showCreateTaskWindow = true">
       <i class="material-icons">add</i>
     </button>
     <!-- Create task window: -->
     <div class="blur-div" v-if="showCreateTaskWindow">
       <div class="card creation-window">
         <h5>Nova demanda</h5>
-        <input type="text" placeholder="Nome..." v-model="nome"><br>
+        <input type="text" placeholder="Nome..." v-model="nome" autofocus><br>
         <input type="text" placeholder="Escopo..." v-model="escopo"><br>
         <input type="text" placeholder="Tipo..." v-model="tipo"><br>
         <input type="text" placeholder="Status..." v-model="statusId"><br>
@@ -75,7 +76,11 @@
         tipo: '',
         statusId: '',
         renameSubmit: '',
-        
+        demandaIdUpdate: '',
+        demandaIdUpdateOld: '',
+        demandaIdUpdateNovo: '',
+        updateArray: [],
+      
         // demandas: [
         //   { descricao: 'Massa 1', comentario: 'Massa massa 1', status: 'Não iniciado' },
         //   { descricao: 'Massa 2', comentario: 'Massa massa 2', status: 'Não iniciado' },
@@ -101,20 +106,35 @@
     },
     methods: {
       createTask() {
-        if (this.descricao.replace(/\s/g, "") !== "" && this.comentario.replace(/\s/g, "") !== "") {
-          console.log("teste")
+        let thisInside = this;
+        if (this.nome.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.tipo.replace(/\s/g, "") !== "" && this.statusId.replace(/\s/g, "") !== "") {
+          let estacaoId = this.$route.query.estacaoId;
+          console.log(this.nome+this.escopo+this.tipo+estacaoId+this.statusId);
+          axios.post(baseUrl + 'atividade/create', {Nome: this.nome, Escopo: this.escopo, Tipo: this.tipo, estacaoId: estacaoId, statusId: this.statusId})
+          .then(function(response){
+            if(response.data.atividadeCriada){
+              thisInside.getAtividade();
+            }else{
+              console.log("erro na criacao da atividade");
+            }
+          })
           this.showCreateTaskWindow = false
-          this.descricao = ''
-          this.comentario = ''
-          this.status = ''
         }
         else {
           alert("Informações inválidas")
         }
       },
-      deleteTask(index) {
+      deleteTask(demandaId) {
+        let thisInside = this;
         if (confirm("Deseja excluir essa demanda?")) {
-          this.demandas.splice(index, 1);
+          axios.delete(baseUrl + 'atividade/' + demandaId + '/delete')
+          .then(function(response){
+            if(response.data.atividadeDeletada){
+              thisInside.getAtividade();
+            }else{
+              console.log("Erro na exclusao da atividade");
+            }
+          })
         }
       },
       updateStatus(index, demandaStatusId) {
@@ -124,18 +144,12 @@
           status[index].classList.replace("theme-red", "theme-green")
           status[index].innerHTML = "Concluído"
         }else if(demandaStatusId == 2){
-          status[index].classList.replace("theme-green", "theme-blue")
+          status[index].classList.replace("theme-red", "theme-red")
           status[index].innerHTML = "Não iniciado"
         }else if(demandaStatusId == 3){
-          status[index].classList.replace("theme-blue", "theme-red")
+          status[index].classList.replace("theme-red", "theme-blue")
           status[index].innerHTML = "Em andamento"
         }
-        // if (status[index].classList == "status theme-red") {
-        // }
-        // else if (status[index].classList == "status theme-blue") {
-        // }
-        // else {
-        // }
       },
       getAtividade(){
         let thisInside = this;
@@ -147,14 +161,38 @@
       },
       checkStatus(){
         var status = document.getElementById("status");
-        console.log(status)
+        // console.log(status)
       },
-      enableEdit(){
+      enableEdit(demandaId){
+        this.demandaIdUpdateNovo = demandaId;
+        if(this.demandaIdUpdateOld == ''){
+          this.demandaIdUpdateOld = demandaId;
+          this.demandaIdUpdate = demandaId;
+        }else if(this.demandaIdUpdateNovo != this.demandaIdUpdateOld){
+          alert("Erro!\nSalve as alterações antes de continuar")
+        }
         this.renameSubmit = true;
+        // this.demandaIdUpdate = demandaId;
+        // this.demandaIdUpdateOld = demandaId;
       },
       updateAtividade(){
+        let thisInside = this;
+        let demandaId = this.demandaIdUpdate;
+        let dadosUpdate = this.updateArray;
+        // console.log(this.updateArray)
+        axios.put(baseUrl + 'atividade/' + this.demandaIdUpdate + '/update', {Nome: dadosUpdate.Nome, Escopo: dadosUpdate.Escopo, Tipo: dadosUpdate.Tipo, estacaoId: dadosUpdate.estacaoId, statusId: dadosUpdate.statusId})
+        .then(function(response){
+          if(response.data.atividateUpdate){
+            thisInside.demandaIdUpdate = '';
+            thisInside.demandaIdUpdateOld = '';
+            thisInside.demandaIdUpdateNovo = '';
+            thisInside.getAtividade();
+          }else{
+            console.log("Erro na atualizacao da atividade");
+          }
+        })
         this.renameSubmit = false;
-        // console.log("teste")
+        // this.demandaIdUpdate = '';
       },
     }
   }

@@ -45,7 +45,7 @@
                 
             }else{
                 this.token = authToken;
-                // this.check();
+                this.check();
             }
         },
         computed: {

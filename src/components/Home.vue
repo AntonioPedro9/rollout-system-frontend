@@ -3,7 +3,7 @@
     <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="projectEmpty">
       <a>Não há projetos</a>
     </div>
-    <div class="card" v-for="(projeto, index) in projetos" v-bind:key="index">
+    <div class="card cardHome" v-for="(projeto, index) in projetos" v-bind:key="index">
       <div class="card-header">
         <h5>{{ projeto.Nome }}</h5>
         <div>
@@ -94,7 +94,6 @@
       createProject() {
         let thisInside = this;
         var statusID = '';
-        // console.log(this.nome+this.escopo+this.statusId)
         if (this.nome.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.selectCreation.replace(/\s/g, "") !== "" && this.selectCreation != '') {
           if(this.selectCreation.toLowerCase() == 'aprovado'){
             statusID = 1;
@@ -106,14 +105,11 @@
           axios.post(baseUrl+'projeto/create', {Nome: this.nome, Escopo: this.escopo, statusId: statusID})
           .then(function(response){
             if(response.data.createdProject){
-              // console.log(true);
               thisInside.getProjetos();
             }else{
-              // console.log(false);
               thisInside.getProjetos();
             }
           })
-          console.log(this.selectCreation)
           this.showCreateProjectWindow = false
         }else{
           alert("Preencha todos os campos")
@@ -131,14 +127,13 @@
             if(response.data.delectedProject){
               thisInside.getProjetos();
             }else{
-              console.log("erro")
+              console.log("Erro no delete do projeto")
             }
           })
           // this.projetos.splice(projectId, 1)
         }
       },
       renameProject() {
-        // console.log(this.idProjectRename)
         let thisInside = this;
         let statusID = '';
         if (this.nomeRename.replace(/\s/g, "") !== "" && this.escopoRename.replace(/\s/g, "") !== "" && this.selectRename != '') {
@@ -148,15 +143,12 @@
             statusID = 2;
           }else if(this.selectRename.toLowerCase() == 'em analise'){
             statusID = 3;
-            console.log("em analise")
           }else{
             statusID = 0;
           }
           axios.put(baseUrl + 'projeto/' +this.idProjectRename+ '/update', {Nome: this.nomeRename, Escopo: this.escopoRename, statusId: statusID})
           .then(function(response){
-            console.log(response.data)
             if(response.data.updatedProject){
-              // console.log(response.data.updatedProject)
               thisInside.getProjetos()
               thisInside.nomeRename = '';
               thisInside.escopoRename = '';
@@ -210,8 +202,8 @@
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-  .card:hover{
-    transform: scale(1.03);
+  .cardHome:hover{
+    transform: scale(1.05);
   }
   .card .card-header {
     display: flex;

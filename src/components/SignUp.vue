@@ -34,11 +34,11 @@
     name: 'SignUp',
     data: () => {
       return {
-        nome: 'gabriel',
-        email: 'gabrielrbernardi@gmail.com',
-        matricula: '11821',
-        senha: 'senhateste',
-        confirmarSenha: 'senhateste',
+        nome: '',
+        email: '',
+        matricula: '',
+        senha: '',
+        confirmarSenha: '',
         selectBox: '',
         submitButton: false,
         errorHandling: true, 

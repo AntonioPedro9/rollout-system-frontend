@@ -2,10 +2,12 @@
   <div class="container">
     <header class="theme-light">
       <router-link to="/home" v-if="isAuthenticated">
+        <!-- <img class="logo" src="https://logodownload.org/wp-content/uploads/2017/08/algar-logo.png"> -->
         <h5><strong>ROLLOUT</strong>SYSTEM</h5>
       </router-link>
       
       <router-link to="/login" v-else>
+        <!-- <img class="logo" src="https://logodownload.org/wp-content/uploads/2017/08/algar-logo.png"> -->
         <h5><strong>ROLLOUT</strong>SYSTEM</h5>
       </router-link>
 
@@ -188,5 +190,18 @@
     top: 30vh;
     left: calc(50vw - 120px);
     z-index: 1;
+  }
+  .logo{
+    /* width: 350px;
+    height: 126px; */
+    width: 10vw;
+    height: auto;
+    margin-left: 2vw;
+    transition: .2s ease;
+  }
+  .logo:hover{
+    opacity: .8;
+    transform: scale(1.1);
+    /* transform: scale(10); */
   }
 </style>

@@ -2,10 +2,10 @@
   <div class="cards" oncontextmenu="return false">
     <div class="card">
       <h5>Login</h5>
-      <div onpaste="return false" onselectstart="return false;">
+      <div onpaste="return true" onselectstart="return false;">
         <input name="Matricula" type="text" placeholder="Matrícula..." v-model="mat" v-on:keyup.enter="login()" autocomplete="off" required autofocus/>
         <input id="password" name="Senha" type="password" placeholder="Senha..." v-model="password" v-on:keyup.enter="login()" autocomplete="off" required/>
-        <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword()">remove_red_eye</i>
+        <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword(0)">remove_red_eye</i>
         <input name="LembrarUsuario" type="checkbox" value="LembrarUsuario" id="remindUser" v-model="remindUser">
         <label for="remindUser">Mantenha-me Conectado</label><br>
         <input class="theme-blue" type="submit" @click="login()" value="Conectar"/>
@@ -14,7 +14,35 @@
         </transition>
         <h6 v-if="sendToken" @click="resendToken()"><a>Reenviar token</a></h6>
       </div>
+      <h6><a v-on:click="showRedefinirSenha= true">Esqueci minha senha</a></h6>
       <h6>Não tem uma conta? <a v-on:click="$router.push('/signup')">Cadastre-se</a></h6>
+    </div>
+    <div class="blur-div" v-if="showRedefinirSenha">
+      <div class="card creation-window">
+        <h5>Redefinir senha</h5>
+        <div v-if="!showDivRedefineSenha">
+        <input type="text" placeholder="Matricula..." v-model="matriculaRedefine" v-on:keyup.enter="redefinirSenha()" autofocus><br>
+        <input type="text" placeholder="Email..." v-model="emailRedefine" v-on:keyup.enter="redefinirSenha()"><br>
+        </div>
+        <transition :name="computedTransition">
+          <div class="errorAlert" id="errorAlert" v-show="!errorHandlingRedefine">{{ messageError }}</div>
+        </transition>
+        <!-- <input type="password" placeholder="Senha antiga..." v-model="oldPasswordRedefine"><br> -->
+        <!-- <input type="password" placeholder="Nova senha..." v-model="newPasswordRedefine"><br> -->
+        <!-- <input type="password" placeholder="Confirmar nova senha..." v-model="confirmNewPasswordRedefine"><br> -->
+        <!-- <input type="text" placeholder="Status do projeto..." v-model="statusIdRename"><br> -->
+        <div v-if="showDivRedefineSenha">
+          <input id="password1" type="password" placeholder="Senha enviada..." v-model="senhaEnviada">
+          <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword(1)">remove_red_eye</i><br>
+          <input id="password2" type="password" placeholder="Nova senha..." v-model="newSenha">
+          <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword(2)">remove_red_eye</i><br>
+          <input id="password3" type="password" placeholder="Confirmar nova senha..." v-model="confirmNewSenha">
+          <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword(3)">remove_red_eye</i><br>
+        </div>
+        <button v-if="showSendButton" class="theme-blue" v-on:click="redefinirSenha()">Enviar</button>
+        <button v-if="!showSendButton" class="theme-blue" v-on:click="redefinirSenhaCheck()">Redefinir</button>
+        <button class="theme-red teste" v-on:click="showRedefinirSenha = false">Cancelar</button>
+      </div>
     </div>
   </div>
 </template>
@@ -23,19 +51,31 @@
   import axios from 'axios';
   import jwt from 'jwt-simple';
   const key = 'key';
-  const rootPath = "http://localhost:3000/";
+  const baseUrl = "http://localhost:3000/";
 
   export default {
     name: 'Login',
     data: () => {
       return {
-        mat: '11821',
-        password: 'senhateste',
+        mat: '',
+        password: '',
         errorHandling: true, 
+        errorHandlingRedefine: true, 
         transitionError: true,
         messageError: '',
         remindUser: false,
-        sendToken: false
+        sendToken: false,
+        showRedefinirSenha: false,
+        matriculaRedefine: '',
+        emailRedefine: '',
+        senhaEnviada: '',
+        newSenha: '',
+        confirmNewSenha: '',
+        showDivRedefineSenha: false,
+        showSendButton: true,
+        // oldPasswordRedefine: '',
+        // newPasswordRedefine: '',
+        // confirmNewPasswordRedefine: '',
       }
     },
     mounted() {
@@ -73,15 +113,15 @@
           thisInside.errorHandling = false;
           thisInside.sendToken = false;
         }else{
-          axios.post(rootPath + 'usuario/login/', {Matricula: this.mat, Senha: this.password})
+          axios.post(baseUrl + 'usuario/login/', {Matricula: this.mat, Senha: this.password})
           .then(function(response){
             if(response.data.authorizedLogin){
               thisInside.errorHandling = true;
               thisInside.sendToken = false;
               // console.log("loginResponse:" + response.data.authorizedLogin);
               if(thisInside.remindUser){
-                // var expireDate = (new Date().getTime()) + (60000 * 60 * 24 * 7);                // Token configurado para expirar em 1 semana
-                var expireDate = (new Date().getTime()) + (60000 * 1 / 2 / 2);                  // Token configurado para expirar em 15 segundos
+                var expireDate = (new Date().getTime()) + (60000 * 60 * 24 * 7);                // Token configurado para expirar em 1 semana
+                // var expireDate = (new Date().getTime()) + (60000 * 1 / 2 / 2);                  // Token configurado para expirar em 15 segundos
                 const loginToken = jwt.encode({
                   matriculaToken: thisInside.mat,
                   senhaToken: thisInside.password,
@@ -117,24 +157,93 @@
           })
         }
       },
-      showPassword(){
-        var val = document.getElementById("password");
-        if(val.type === "password"){
-          val.type = "text";
-          return false;
-        }else{
-          val.type = "password";
-          return true;
+      showPassword(indexPassword){
+        if(indexPassword == 0){
+          var val = document.getElementById("password");
+          if(val.type === "password"){
+            val.type = "text";
+            return false;
+          }else{
+            val.type = "password";
+            return true;
+          }
+        }else if(indexPassword == 1){
+          var val = document.getElementById("password1");
+          if(val.type === "password"){
+            val.type = "text";
+            return false;
+          }else{
+            val.type = "password";
+            return true;
+          }
+        }else if(indexPassword == 2){
+          var val = document.getElementById("password2");
+          if(val.type === "password"){
+            val.type = "text";
+            return false;
+          }else{
+            val.type = "password";
+            return true;
+          }          
+        }else if(indexPassword == 3){
+          var val = document.getElementById("password3");
+          if(val.type === "password"){
+            val.type = "text";
+            return false;
+          }else{
+            val.type = "password";
+            return true;
+          }          
         }
       },
       resendToken(){
-        console.log(this.mat)
-        console.log(this.password)
-        axios.post(rootPath + 'usuario/sendTokenAgain', {Matricula: this.mat, Senha: this.password})
+        // console.log(this.mat)
+        // console.log(this.password)
+        let thisInside = this;
+        axios.post(baseUrl + 'usuario/sendTokenAgain', {Matricula: this.mat, Senha: this.password})
         .then(function(response){
+          console.log(response.data)
+          thisInside.messageError = "Email enviado";  
+          thisInside.errorHandling = false;
           console.log(response);
         })
-      }
+      },
+      redefinirSenha(){
+        let thisInside = this;
+        axios.post(baseUrl + 'usuario/redefinirSenha', {Matricula: this.matriculaRedefine, Email: this.emailRedefine})
+        .then(function(response){
+          if(response.data.emailEnviado){
+            thisInside.messageError = 'Mensagem enviada. Verifique seu email.';
+            document.getElementById("errorAlert").style.backgroundColor = "#99ff9e"
+            thisInside.showDivRedefineSenha = true;
+            thisInside.showSendButton = false;
+          }else if(!response.data.usuarioEncontrado){
+            thisInside.messageError = 'Usuario não encontrado';
+          }else if(!response.data.emailEncontrado){
+            thisInside.messageError = 'Email não encontrado';
+          }
+          thisInside.errorHandlingRedefine = false;
+          // console.log(response.data)
+          // console.log(thisInside.messageError)
+          localStorage.username = thisInside.matriculaRedefine;
+        })
+      },
+      redefinirSenhaCheck(){
+        let thisInside = this;
+        let matricula = localStorage.username;
+        console.log(matricula)
+        axios.post(baseUrl + 'usuario/redefinirSenhaConfirm', {Matricula: matricula, SenhaEnviada: this.senhaEnviada, NewSenha: this.newSenha, ConfirmNewSenha: this.confirmNewSenha})
+        .then(function(response){
+          if(response.data.redefineSenha){
+            thisInside.showRedefinirSenha = false;
+            thisInside.showDivRedefineSenha = false;
+          }else{
+            document.getElementById("errorAlert").style.backgroundColor = "#f99"
+            thisInside.messageError = response.data.errorType;
+          }
+          // console.log(response)
+        })
+      },
     }
   }
 </script>
