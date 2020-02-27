@@ -21,7 +21,7 @@
       <p>Status do projeto: {{transformStatusId(projeto.statusId)}}</p>
       <!-- <p>{{ projeto.concluidas }} concluidas</p> -->
       <!-- <button class="theme-blue" v-on:click="$router.push('/sites/q?id=' + projeto.id)">Abrir</button> -->
-      <button class="theme-blue" v-on:click="$router.push('/sites')">Abrir</button>
+      <button class="theme-blue" v-on:click="$router.push('/sites/q?projetoId=' + projeto.id)">Abrir</button>
     </div>
     <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true, getStatus()">
       <i class="material-icons">add</i>
@@ -193,7 +193,7 @@
         }else if(statusId == 3){
           return "Em análise";
         }else{
-          return "Error 404";
+          return;
         }
       },
     }

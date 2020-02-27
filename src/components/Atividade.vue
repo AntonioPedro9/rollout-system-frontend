@@ -153,7 +153,8 @@
       },
       getAtividade(){
         let thisInside = this;
-        axios.get(baseUrl + 'atividades/1')
+        let estacaoId = this.$route.query.estacaoId;
+        axios.get(baseUrl + 'atividades/1/' + estacaoId)
         .then(function(response){
           thisInside.demandas = response.data;
           // console.log(response)

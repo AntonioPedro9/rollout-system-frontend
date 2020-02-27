@@ -51,8 +51,8 @@
           <option value="" disabled>Cidade</option>
           <option v-for="(cidade, index) in cidades" :key="index" @click="indexCidadeCreate = index+1">{{cidade.Nome}}</option>
         </select><br>
-        <input type="text" placeholder="Projeto ID..." v-model="projetoId"><br>
-        <select class="selectBox" style="width: 192px;" v-model="selectRename">
+        <input type="text" class="disabled" placeholder="Projeto ID..." v-model="projetoId" disabled><br>
+        <select class="selectBox" style="width: 192px;" v-model="selectCreate">
           <option value="" disabled>Status</option>
           <option v-for="(status, index) in statuses" :key="index" @click="indexStatusCreate = index+1">{{status.Descricao}}</option>
         </select><br>
@@ -69,7 +69,7 @@
           <option value="" disabled>Cidade</option>
           <option v-for="(cidade, index) in cidades" :key="index" @click="indexCidadeRename = index+1">{{cidade.Nome}}</option>
         </select><br>
-        <input type="text" placeholder="Projeto ID..." v-model="projetoIdRename"><br>
+        <input type="text" class="disabled" placeholder="Projeto ID..." v-model="projetoIdRename" disabled title="Este parâmetro não pode ser alterado"><br>
         <select class="selectBox" style="width: 192px;" v-model="selectRename">
           <option value="" disabled>Status</option>
           <option v-for="(status, index) in statuses" :key="index" @click="indexStatusRename = index+1">{{status.Descricao}}</option>
@@ -93,7 +93,7 @@
         showRenameSiteWindow: false,
         nomeEstacao: '',
         escopo: '',
-        cidade: '',
+        cidade: 'a',
         projetoId: '',
         statusId: '',
         sites: '',
@@ -102,6 +102,7 @@
         cidadeRename: '',
         projetoIdRename: '',
         statusIdRename: '',
+        selectCreate: '',
         selectRename: '',
         statuses: '',
         cidades: '',
@@ -133,12 +134,20 @@
     mounted(){
       // let projetoId = this.$route.query.id;
       // console.log(projetoId)
+      this.projetoIdInsert();
       this.getEstacoes();
     },
     methods: {
       createSite() {
         let thisInside = this;
-        if (this.nomeEstacao.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.cidade.replace(/\s/g, "") !== "" && this.projetoId.replace(/\s/g, "") !== "" && this.statusId.replace(/\s/g, "") !== "") {
+        if (this.nomeEstacao.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "") {
+          // if(this.selectCreate.toLowerCase() == 'aprovado'){
+          //   statusID = 1;
+          // }else if(this.selectCreate.toLowerCase() == 'reprovado'){
+          //   statusID = 2;
+          // }else if(this.selectCreate.toLowerCase() == 'em analise'){
+          //   statusID = 3;
+          // }
           axios.post(baseUrl + 'estacao/create', {Nome: this.nomeEstacao, Escopo: this.escopo, cidadeId: this.indexCidadeCreate, projetoId: this.projetoId, statusId: this.indexStatusCreate})
           .then(function(response){
             if(response.data.estacaoCriada){
@@ -182,23 +191,23 @@
         let statusID = 1;
         // console.log(this.siteIdRename)
         // console.log(this.nomeEstacaoRename+this.escopoRename+this.cidadeRename+this.projetoIdRename+this.selectRename)
-        if (this.nomeEstacaoRename.replace(/\s/g, "") !== "" && this.escopoRename.replace(/\s/g, "") !== "" && this.cidadeRename.replace(/\s/g, "") !== "" && this.projetoIdRename.replace(/\s/g, "") !== "" && this.selectRename !== "") {
-          if(this.selectRename.toLowerCase() == 'aprovado'){
-            statusID = 1;
-          }else if(this.selectRename.toLowerCase() == 'reprovado'){
-            statusID = 2;
-          }else if(this.selectRename.toLowerCase() == 'em analise'){
-            statusID = 3;
-          }
-          axios.put(baseUrl + 'estacao/' + this.siteIdRename + '/update', {Nome: this.nomeEstacaoRename, Escopo: this.escopoRename, cidadeId: this.indexCidadeRename, projetoId: this.projetoIdRename, statusId: statusID})
+        if (this.nomeEstacaoRename.replace(/\s/g, "") !== "" && this.escopoRename.replace(/\s/g, "") !== "" && this.projetoIdRename.replace(/\s/g, "") !== "") {
+          // if(this.selectRename.toLowerCase() == 'aprovado'){
+          //   statusID = 1;
+          // }else if(this.selectRename.toLowerCase() == 'reprovado'){
+          //   statusID = 2;
+          // }else if(this.selectRename.toLowerCase() == 'em analise'){
+          //   statusID = 3;
+          // }
+          axios.put(baseUrl + 'estacao/' + this.siteIdRename + '/update', {Nome: this.nomeEstacaoRename, Escopo: this.escopoRename, cidadeId: this.indexCidadeRename, projetoId: this.projetoIdRename, statusId: this.indexStatusRename})
           .then(function(response){
             // console.log(response.data)
             if(response.data.updatedEstacao){
               thisInside.getEstacoes()
             }else{
               // console.log(response.data.updatedEstacao)
+              thisInside.getEstacoes()
             }
-            thisInside.getEstacoes()
           })
           this.showRenameSiteWindow = false;
         }else{
@@ -209,7 +218,7 @@
       getEstacoes(){
         let thisInside = this;
         // console.log(estacaoId);
-        axios.get(baseUrl + 'estacoes/1')
+        axios.get(baseUrl + 'estacoes/1/' + this.projetoId)
         .then(function(response){
           if(response.data.length == 0){
             thisInside.sites = '';
@@ -253,6 +262,10 @@
             thisInside.sites[indexCidade].cidadeId = response.data.Nome
           }
         })
+      },
+      projetoIdInsert(){
+        this.projetoId = this.$route.query.projetoId;
+        this.projetoIdRename = this.$route.query.projetoId;
       }
     }
   }
@@ -308,13 +321,19 @@
     text-decoration: none;
     transition: background-color .3s;
   }
-
-  /* Style the active/current link */
   .paginate a.active {
     background-color: dodgerblue;
     color: white;
   }
-
-  /* Add a grey background color on mouse-over */
-  .paginate a:hover:not(.active) {background-color: #ddd;}
+  .paginate a:hover:not(.active) {
+    background-color: #ddd;
+  }
+  .disabled{
+    cursor: not-allowed;
+    transition: .2s ease;
+  }
+  .disabled:hover{
+    opacity: .75;
+    background-color: #f99;
+  }
 </style>

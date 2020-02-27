@@ -16,7 +16,7 @@ export default new Router({
     { path: '/login', name: 'Login', component: Login },
     { path: '/signup', name: 'SignUp', component: SignUp },
     { path: '/home', name: 'Home', component: Home },
-    { path: '/sites', name: 'Sites', component: Sites },
+    { path: '/sites/:id', name: 'Sites', component: Sites },
     { path: '/sites/atividade/:id', name: 'Atividade', component: Atividade },
     { path: '/verifyToken/:id', name: 'VerifyToken', component: VerifyToken },
     { path: '/', redirect: '/login' },

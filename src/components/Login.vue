@@ -213,6 +213,11 @@
         axios.post(baseUrl + 'usuario/redefinirSenha', {Matricula: this.matriculaRedefine, Email: this.emailRedefine})
         .then(function(response){
           if(response.data.emailEnviado){
+            setTimeout(function(){
+              thisInside.messageError = '';
+              document.getElementById("errorAlert").style.backgroundColor = "#f99"
+              thisInside.errorHandlingRedefine = true;
+            }, 5000);
             thisInside.messageError = 'Mensagem enviada. Verifique seu email.';
             document.getElementById("errorAlert").style.backgroundColor = "#99ff9e"
             thisInside.showDivRedefineSenha = true;

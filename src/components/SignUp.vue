@@ -95,35 +95,39 @@
           thisInside.aceptedHandling = false;
         }else{
           // console.log(this.selectBox)
-          axios.post("http://localhost:3000/usuario/create", {Nome: this.nome, Matricula: this.matricula, Email: this.email, Senha: this.senha, ConfirmarSenha: this.confirmarSenha, selectDomain: this.selectBox})
-          .then(function(response){
-            // console.log(response)
-            if(response.data.emailEnviado){
-              thisInside.aceptedHandling = true;
-              thisInside.errorHandling = true;
-              thisInside.messageAcepted = "Email para verificação enviado. Verifique sua caixa de entrada";
-            }else if(response.data.senhasDiferentes){
-              thisInside.errorHandling = false;
-              thisInside.aceptedHandling = false;
-              thisInside.messageError = "As senhas sao diferentes";
-            }else if(response.data.usuarioExistente){
-              thisInside.errorHandling = false;
-              thisInside.aceptedHandling = false;
-              thisInside.messageError = "Já existe cadastro com essa matrícula"
-            }else if(response.data.nullField){
-              thisInside.messageError = "Preencha todos os campos";
-              thisInside.errorHandling = false;
-              thisInside.aceptedHandling = false;
-            }else if(response.data.emailInvalido){
-              thisInside.errorHandling = false;
-              thisInside.aceptedHandling = false;
-              thisInside.messageError = "Email inválido";
-            }else{  //email nao enviado
-              thisInside.errorHandling = false;
-              thisInside.aceptedHandling = false;
-              thisInside.messageError = "Email não enviado"
-            }
-          })
+          if(this.selectBox == 'algarMail'){
+            alert('Conta não pode ser criada.\nContacte o administrador do sistema para mais informações.')
+          }else {
+            axios.post("http://localhost:3000/usuario/create", {Nome: this.nome, Matricula: this.matricula, Email: this.email, Senha: this.senha, ConfirmarSenha: this.confirmarSenha, selectDomain: this.selectBox})
+            .then(function(response){
+              // console.log(response)
+              if(response.data.emailEnviado){
+                thisInside.aceptedHandling = true;
+                thisInside.errorHandling = true;
+                thisInside.messageAcepted = "Email para verificação enviado. Verifique sua caixa de entrada";
+              }else if(response.data.senhasDiferentes){
+                thisInside.errorHandling = false;
+                thisInside.aceptedHandling = false;
+                thisInside.messageError = "As senhas sao diferentes";
+              }else if(response.data.usuarioExistente){
+                thisInside.errorHandling = false;
+                thisInside.aceptedHandling = false;
+                thisInside.messageError = "Já existe cadastro com essa matrícula"
+              }else if(response.data.nullField){
+                thisInside.messageError = "Preencha todos os campos";
+                thisInside.errorHandling = false;
+                thisInside.aceptedHandling = false;
+              }else if(response.data.emailInvalido){
+                thisInside.errorHandling = false;
+                thisInside.aceptedHandling = false;
+                thisInside.messageError = "Email inválido";
+              }else{  //email nao enviado
+                thisInside.errorHandling = false;
+                thisInside.aceptedHandling = false;
+                thisInside.messageError = "Email não enviado"
+              }
+            })
+          }
         }
         this.submitButton = false;
       },
