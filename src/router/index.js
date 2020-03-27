@@ -6,7 +6,9 @@ import Home from '@/components/Home.vue'
 import Sites from '@/components/Sites.vue'
 import Atividade from '@/components/Atividade.vue'
 import VerifyToken from '@/components/verifyToken.vue'
+import Paginate from 'vuejs-paginate'
 
+Vue.component('paginate', Paginate)
 Vue.use(Router)
 Vue.config.devtools = false;        //Desativando mensagem de devTools no console do client
 
