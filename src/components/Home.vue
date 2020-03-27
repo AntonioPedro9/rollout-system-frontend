@@ -1,62 +1,88 @@
 <template>
-  <div class="cards">
-    <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="projectEmpty">
-      <a>Não há projetos</a>
-    </div>
-    <div class="card cardHome" v-for="(projeto, index) in projetos" v-bind:key="index">
-      <div class="card-header">
-        <h5>{{ projeto.Nome }}</h5>
-        <div>
-          <i class="material-icons icon-button options-button">more_vert</i>
-          <div class="card card-options">
-            <ul>
-              <li v-on:click="showRenameProjectWindow = true; idProjectRename = projeto.id; getStatus()">Renomear</li>
-              <li v-on:click="deleteProject(projeto.id)">Deletar</li>
-            </ul>
+  <div>
+    <div class="cards">
+      <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="projectEmpty">
+        <a>Não há projetos</a>
+      </div>
+      <div class="card cardHome" v-for="(projeto, index) in projetos" v-bind:key="index">
+        <div class="card-header">
+          <h5>{{ projeto.Nome }}</h5>
+          <div>
+            <i class="material-icons icon-button options-button">more_vert</i>
+            <div class="card card-options">
+              <ul>
+                <li v-on:click="showRenameProjectWindow = true; idProjectRename = projeto.id; getStatus()">Renomear</li>
+                <li v-on:click="deleteProject(projeto.id)">Deletar</li>
+              </ul>
+            </div>
           </div>
         </div>
+        <p>{{ projeto.Escopo }}</p>
+        <p>Id do projeto: {{ projeto.id }}</p>
+        <p>Status do projeto: {{transformStatusId(projeto.statusId)}}</p>
+        <!-- <p>{{ projeto.concluidas }} concluidas</p> -->
+        <!-- <button class="theme-blue" v-on:click="$router.push('/sites/q?id=' + projeto.id)">Abrir</button> -->
+        <button class="theme-blue" v-on:click="$router.push('/sites/q?projetoId=' + projeto.id)">Abrir</button>
       </div>
-      <p>{{ projeto.Escopo }}</p>
-      <p>Id do projeto: {{ projeto.id }}</p>
-      <p>Status do projeto: {{transformStatusId(projeto.statusId)}}</p>
-      <!-- <p>{{ projeto.concluidas }} concluidas</p> -->
-      <!-- <button class="theme-blue" v-on:click="$router.push('/sites/q?id=' + projeto.id)">Abrir</button> -->
-      <button class="theme-blue" v-on:click="$router.push('/sites/q?projetoId=' + projeto.id)">Abrir</button>
+      <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true, getStatus()">
+        <i class="material-icons">add</i>
+      </button><br>
+      
+      <!-- Create project window: -->
+      
+      <div class="blur-div" v-if="showCreateProjectWindow">
+        <div class="card creation-window">
+          <h5>Novo projeto</h5>
+          <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
+          <input type="text" placeholder="Escopo do projeto..." v-model="escopo"><br>
+          <!-- <input type="text" placeholder="Status do projeto..." v-model="statusId"><br> -->
+          <select class="selectBox" style="width: 192px;" v-model="selectCreation">
+            <option value="" disabled>Status</option>
+            <option v-for="(status, index) in statuses" :key="index">{{status.Descricao}}</option>
+          </select><br>
+          <button class="theme-blue" v-on:click="createProject()">Criar</button>
+          <button class="theme-red" v-on:click="showCreateProjectWindow = false">Cancelar</button>
+        </div>
+      </div>
+      <div class="blur-div" v-if="showRenameProjectWindow">
+        <div class="card creation-window">
+          <h5>Atualizar projeto</h5>
+          <input type="text" placeholder="Nome do projeto..." v-model="nomeRename" autofocus><br>
+          <input type="text" placeholder="Escopo do projeto..." v-model="escopoRename"><br>
+          <!-- <input type="text" placeholder="Status do projeto..." v-model="statusIdRename"><br> -->
+          <select class="selectBox" style="width: 192px;" v-model="selectRename">
+            <option value="" disabled>Status</option>
+            <option v-for="(status, index) in statuses" :key="index">{{status.Descricao}}</option>
+          </select><br>
+          <button class="theme-blue" v-on:click="renameProject()">Atualizar</button>
+          <button class="theme-red" v-on:click="showRenameProjectWindow = false">Cancelar</button>
+        </div>
+      </div>
     </div>
-    <button class="fab theme-blue" v-on:click="showCreateProjectWindow = true, getStatus()">
-      <i class="material-icons">add</i>
-    </button>
-    <!-- Create project window: -->
-    <div class="blur-div" v-if="showCreateProjectWindow">
-      <div class="card creation-window">
-        <h5>Novo projeto</h5>
-        <input type="text" placeholder="Nome do projeto..." v-model="nome"><br>
-        <input type="text" placeholder="Escopo do projeto..." v-model="escopo"><br>
-        <!-- <input type="text" placeholder="Status do projeto..." v-model="statusId"><br> -->
-        <select class="selectBox" style="width: 192px;" v-model="selectCreation">
-          <option value="" disabled>Status</option>
-          <option v-for="(status, index) in statuses" :key="index">{{status.Descricao}}</option>
-        </select><br>
-        <button class="theme-blue" v-on:click="createProject()">Criar</button>
-        <button class="theme-red" v-on:click="showCreateProjectWindow = false">Cancelar</button>
-      </div>
-    </div>
-    <div class="blur-div" v-if="showRenameProjectWindow">
-      <div class="card creation-window">
-        <h5>Atualizar projeto</h5>
-        <input type="text" placeholder="Nome do projeto..." v-model="nomeRename" autofocus><br>
-        <input type="text" placeholder="Escopo do projeto..." v-model="escopoRename"><br>
-        <!-- <input type="text" placeholder="Status do projeto..." v-model="statusIdRename"><br> -->
-        <select class="selectBox" style="width: 192px;" v-model="selectRename">
-          <option value="" disabled>Status</option>
-          <option v-for="(status, index) in statuses" :key="index">{{status.Descricao}}</option>
-        </select><br>
-        <button class="theme-blue" v-on:click="renameProject()">Atualizar</button>
-        <button class="theme-red" v-on:click="showRenameProjectWindow = false">Cancelar</button>
-      </div>
+
+    <div class="containerPaginate" v-if="showPaginate">
+      <paginate
+        v-model="pagePaginate"
+        :page-count="qtdPagePaginate"
+        :page-range="3"
+        :margin-pages="2"
+        :click-handler="paginateFunction"
+        :container-class="'paginate'"
+        :first-last-button="true"
+        :prev-text="'Prev'"
+        :next-text="'Next'"
+        :first-button-text="'First'"
+        :last-button-text="'Last'"
+        :no-li-surround="true"
+        :page-link-class="'otherPaginateItem'"
+        :prev-link-class="'otherPaginateItem'"
+        :next-link-class="'otherPaginateItem'"
+        :disabled-class="'disabledPaginateItem'"
+        :active-class="'activePaginateItem'"
+        >
+      </paginate>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -80,6 +106,10 @@
         statuses: '',
         selectCreation: '',
         selectRename: '',
+        pagePaginate: 1,
+        qtdPagePaginate: 1,
+        showPaginate: true,
+        showProject: false,
         // projetos: [
         //   { nome: '2,5GHz TDD', estacoes: 0, concluidas: 0 },
         //   { nome: 'EILD Satélite', estacoes: 27, concluidas: 0 },
@@ -166,14 +196,29 @@
       },
       getProjetos(){
         let thisInside = this;
-        axios.get(baseUrl+'projetos/1')
+        axios.get(baseUrl+'projetos/' + this.pagePaginate)
         .then(function(response){
-          if(response.data.length == 0){
+          // if(response.data.length == 0){
+          //   thisInside.projetos = '';
+          //   thisInside.projectEmpty = true;
+          // }else{
+          //   thisInside.projetos = response.data;
+          //   thisInside.projectEmpty = false;
+          // }
+          
+          if(response.data.totalPage == 0){
             thisInside.projetos = '';
-            thisInside.projectEmpty = true;
-          }else{
-            thisInside.projetos = response.data;
             thisInside.projectEmpty = false;
+          }else{
+            thisInside.showProject = true;
+            if(response.data.totalPage > 1){
+              thisInside.showPaginate = true;
+              thisInside.qtdPagePaginate = response.data.totalPage;
+              thisInside.projetos = response.data;
+              thisInside.projectEmpty = false;
+            }
+            delete response.data.totalPage
+            thisInside.sites = response.data;
           }
         })
       },
@@ -195,6 +240,9 @@
         }else{
           return;
         }
+      },
+      paginateFunction(){
+        this.getProjetos();
       },
     }
   }
@@ -221,9 +269,6 @@
   }
   .card-options ul li:hover {
     background-color: #F1F1F1
-  }
-  .options-button:hover + .card-options { 
-    display: block;
   }
   .card-options:hover { 
     display: block;

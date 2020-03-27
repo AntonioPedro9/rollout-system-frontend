@@ -1,15 +1,16 @@
 <template>
   <div class="cards">
     <div class="card">
-      <div class="card-header">
+      <div class="card-header" v-if="showProject">
         <h5>Projeto</h5>
         <div class="search-box">
           <i class="material-icons">search</i>
           <input type="text" v-model="search" placeholder="Buscar..."/>
         </div>
       </div>
-      <table id="siteTable">
+      <table id="siteTable" v-if="showProject">
         <tr>
+          <!-- <th>ID</th> -->
           <th>Index</th>
           <th>Estação</th>
           <th>Escopo</th>
@@ -17,8 +18,9 @@
           <th>Progresso</th>
           <th></th>
         </tr>
-        <tr class="site" v-for="(site, index) in sites" :key="index">
-          <td>{{index+1}}</td>
+        <tr class="site" v-for="(site, index) in filteredSites" :key="index">
+          <!-- <td>{{site.id}}</td> -->
+          <td>{{parseInt(index)+1}}</td>
           <td v-on:click="$router.push('/sites/atividade/q?estacaoId=' + site.id)">{{ site.Nome }}</td>
           <td v-on:click="$router.push('/sites/atividade/q?estacaoId=' + site.id)">{{ site.Escopo }}</td>
           <td v-on:click="$router.push('/sites/atividade/q?estacaoId=' + site.id)">{{ site.cidadeId }}</td>
@@ -31,12 +33,39 @@
           <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="showRenameSiteWindow = true, getStatus(), getCidade(), siteIdRename = site.id">edit</i></td>
         </tr>
       </table>
+      <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="!showProject">
+        <a>Não há Estações</a>
+      </div>
       <!-- <div class="paginate">
         <a href="#">&laquo;</a>
-        <a href="#">1</a>
         <a class="active" href="#">1</a>
+        <a href="#">2</a>
         <a href="#">&raquo;</a>
       </div> -->
+      <!-- <span class="paginateSpan"> -->
+      <div class="containerPaginate" v-if="showPaginate">
+        <paginate
+          v-model="pagePaginate"
+          :page-count="qtdPagePaginate"
+          :page-range="3"
+          :margin-pages="2"
+          :click-handler="paginateFunction"
+          :container-class="'paginate'"
+          :first-last-button="true"
+          :prev-text="'Prev'"
+          :next-text="'Next'"
+          :first-button-text="'First'"
+          :last-button-text="'Last'"
+          :no-li-surround="true"
+          :page-link-class="'otherPaginateItem'"
+          :prev-link-class="'otherPaginateItem'"
+          :next-link-class="'otherPaginateItem'"
+          :disabled-class="'disabledPaginateItem'"
+          :active-class="'activePaginateItem'"
+          >
+        </paginate>
+      </div>
+      <!-- </span> -->
     </div>
     <button class="fab theme-blue" v-on:click="showCreateSiteWindow = true,  getStatus(), getCidade()">
       <i class="material-icons">add</i>
@@ -113,6 +142,10 @@
         indexCidadeRename: '',
         indexStatusRename: '',
         siteIdRename: '',
+        pagePaginate: 1,
+        qtdPagePaginate: 0,
+        showPaginate: false,
+        showProject: false,
         
         // sites: [
         //   { nomeEstacao: 'estação 1', escopo: 'escopo 1', cidade: 'lugar 1' },
@@ -123,13 +156,15 @@
     },
     computed: {
       filteredSites() {
-        return this.sites.filter( (site) => {
-          return site.Nome.match(this.search) || site.Escopo.match(this.search) || site.cidadeId.match(this.search);
-        });
+        if (this.search == '') {
+          return this.sites
+        }
+        else return this.sites.filter( (site) => {
+           //return site.Nome.match(this.search) || site.Escopo.match(this.search) || site.cidadeId.match(this.search);
+           return site.Nome.toUpperCase().match(this.search.toUpperCase()) ||
+                  site.Escopo.toUpperCase().match(this.search.toUpperCase()) 
+         });
       },
-      rows() {
-        return this.sites.length;
-      }
     },
     mounted(){
       // let projetoId = this.$route.query.id;
@@ -141,23 +176,17 @@
       createSite() {
         let thisInside = this;
         if (this.nomeEstacao.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "") {
-          // if(this.selectCreate.toLowerCase() == 'aprovado'){
-          //   statusID = 1;
-          // }else if(this.selectCreate.toLowerCase() == 'reprovado'){
-          //   statusID = 2;
-          // }else if(this.selectCreate.toLowerCase() == 'em analise'){
-          //   statusID = 3;
-          // }
           axios.post(baseUrl + 'estacao/create', {Nome: this.nomeEstacao, Escopo: this.escopo, cidadeId: this.indexCidadeCreate, projetoId: this.projetoId, statusId: this.indexStatusCreate})
           .then(function(response){
             if(response.data.estacaoCriada){
-              thisInside.getEstacoes();
+              // thisInside.getEstacoes();
             }else{
               console.log(response);
             }
             // console.log(response)
             // console.log(response.data.estacaoCriada);
           })
+          this.getEstacoes();
           this.showCreateSiteWindow = false;
           // this.nomeEstacao = ''
           // this.escopo = ''
@@ -218,16 +247,19 @@
       getEstacoes(){
         let thisInside = this;
         // console.log(estacaoId);
-        axios.get(baseUrl + 'estacoes/1/' + this.projetoId)
+        axios.get(baseUrl + 'estacoes/' + this.pagePaginate + '/' + this.projetoId)
         .then(function(response){
-          if(response.data.length == 0){
+          if(response.data.totalPage == 0){
             thisInside.sites = '';
-            thisInside.projectEmpty = true;
-            // console.log("teste")
+            thisInside.showProject = false;
           }else{
-            // console.log(response.data)
+            thisInside.showProject = true;
+            if(response.data.totalPage > 1){
+              thisInside.showPaginate = true;
+              thisInside.qtdPagePaginate = response.data.totalPage;
+            }
+            delete response.data.totalPage
             thisInside.sites = response.data;
-            thisInside.projectEmpty = false;
             for(var i = 0; i < response.data.length; i++){
               // console.log(response.data[i].cidadeId)
               thisInside.getEstacaoCidade(response.data[i].cidadeId, i);
@@ -266,6 +298,9 @@
       projetoIdInsert(){
         this.projetoId = this.$route.query.projetoId;
         this.projetoIdRename = this.$route.query.projetoId;
+      },
+      paginateFunction(){
+        this.getEstacoes();
       }
     }
   }
@@ -311,22 +346,14 @@
     bottom: 15px;
     right: 4%;
   }
+  .containerPaginate{
+    text-align: center;
+    position: relative;
+    padding: 3vh 0 1vh 0;
+  }
   .paginate{
-    padding: 10px;
-  }
-  .paginate a {
-    color: black;
-    float: left;
-    padding: 8px 16px;
-    text-decoration: none;
-    transition: background-color .3s;
-  }
-  .paginate a.active {
-    background-color: dodgerblue;
-    color: white;
-  }
-  .paginate a:hover:not(.active) {
-    background-color: #ddd;
+    display: inline-flex;
+    /* border: 3px solid #73AD21; */
   }
   .disabled{
     cursor: not-allowed;
@@ -335,5 +362,8 @@
   .disabled:hover{
     opacity: .75;
     background-color: #f99;
+  }
+  .nonLink a{
+    cursor: default;
   }
 </style>

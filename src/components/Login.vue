@@ -3,7 +3,7 @@
     <div class="card">
       <h5>Login</h5>
       <div onpaste="return true" onselectstart="return false;">
-        <input name="Matricula" type="text" placeholder="Matrícula..." v-model="mat" v-on:keyup.enter="login()" autocomplete="off" required autofocus/>
+        <input name="Matricula" type="text" placeholder="Matrícula..." v-model="mat" @keyup.enter="login()" autocomplete="off" required autofocus/>
         <input id="password" name="Senha" type="password" placeholder="Senha..." v-model="password" v-on:keyup.enter="login()" autocomplete="off" required/>
         <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword(0)">remove_red_eye</i>
         <input name="LembrarUsuario" type="checkbox" value="LembrarUsuario" id="remindUser" v-model="remindUser">
@@ -14,7 +14,7 @@
         </transition>
         <h6 v-if="sendToken" @click="resendToken()"><a>Reenviar token</a></h6>
       </div>
-      <h6><a v-on:click="showRedefinirSenha= true">Esqueci minha senha</a></h6>
+      <h6 v-if="showEsqueci"><a v-on:click="showRedefinirSenha= true">Esqueci minha senha</a></h6>
       <h6>Não tem uma conta? <a v-on:click="$router.push('/signup')">Cadastre-se</a></h6>
     </div>
     <div class="blur-div" v-if="showRedefinirSenha">
@@ -73,6 +73,7 @@
         confirmNewSenha: '',
         showDivRedefineSenha: false,
         showSendButton: true,
+        showEsqueci: false,
         // oldPasswordRedefine: '',
         // newPasswordRedefine: '',
         // confirmNewPasswordRedefine: '',
@@ -99,6 +100,16 @@
     computed: {
       computedTransition () {
         return this.transitionError && 'fade'
+      },
+      
+    },
+    watch:{
+      mat: function checkMatricula(){
+        if(this.mat != ''){
+          return this.showEsqueci = true;
+        }else{
+          return this.showEsqueci = false;
+        }
       }
     },
     methods: {
@@ -129,10 +140,12 @@
                   expire: expireDate
                 }, key);
                 localStorage.userData = loginToken;
+                localStorage.user = response.data.user;
               }else{
                 localStorage.loggedin = true;
                 thisInside.sendToken = false;
                 localStorage.username = thisInside.mat;
+                localStorage.user = response.data.user;
               }
               thisInside.$router.push('/home')
               // window.location.href = "/home";

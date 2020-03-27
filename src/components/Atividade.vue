@@ -13,7 +13,7 @@
     </div>
     <div>
       <div class="card">
-        <div class="card-header">
+        <div class="card-header" v-if="showProject">
           <h5>Demandas</h5>
           <div v-if="renameSubmit"><i class="material-icons icon-button" style="font-size: 18px" v-on:click="updateAtividade()">done_outline</i></div>
           <div v-if="!renameSubmit" class="search-box">
@@ -21,8 +21,9 @@
             <input type="text" v-model="search" placeholder="Buscar..."/>
           </div>
         </div>
-        <table>
+        <table v-if="showProject">
           <tr>
+            <th>Index</th>
             <th>Nome</th>
             <th>Escopo</th>
             <th>Tipo</th>
@@ -30,17 +31,43 @@
             <th></th>
           </tr>
           <tr class="site" v-for="(demanda, index) in demandas" :key="index">
+            <td>{{parseInt(index)+1}}</td>
             <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Nome" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
             <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Escopo" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
             <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Tipo" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
             <!-- <td v-if="true"><input class="editable" type="text" v-model="demanda.estacaoId"></td> -->
-            <td><div class="status theme-red" @click="updateStatus(index, demanda.statusId)"> {{ demanda.statusId }} </div></td>
+            <td><div class="status theme-red" @click="updateStatus(index, demanda.statusId)"> {{ transformStatusId(index, demanda.statusId) }} </div></td>
             <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteTask(demanda.id)">delete</i></td>
           </tr>
         </table>
+        <div class="containerPaginate" v-if="showPaginate">
+          <paginate
+            v-model="pagePaginate"
+            :page-count="qtdPagePaginate"
+            :page-range="3"
+            :margin-pages="2"
+            :click-handler="paginateFunction"
+            :container-class="'paginate'"
+            :first-last-button="true"
+            :prev-text="'Prev'"
+            :next-text="'Next'"
+            :first-button-text="'First'"
+            :last-button-text="'Last'"
+            :no-li-surround="true"
+            :page-link-class="'otherPaginateItem'"
+            :prev-link-class="'otherPaginateItem'"
+            :next-link-class="'otherPaginateItem'"
+            :disabled-class="'disabledPaginateItem'"
+            :active-class="'activePaginateItem'"
+          >
+          </paginate>
+        </div>
+      <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="!showProject">
+        <a>Não há Demandas</a>
+      </div>
       </div>
     </div>
-    <button class="fab theme-blue" @click="showCreateTaskWindow = true">
+    <button class="fab theme-blue" @click="showCreateTaskWindow = true, getStatus()">
       <i class="material-icons">add</i>
     </button>
     <!-- Create task window: -->
@@ -50,7 +77,11 @@
         <input type="text" placeholder="Nome..." v-model="nome" autofocus><br>
         <input type="text" placeholder="Escopo..." v-model="escopo"><br>
         <input type="text" placeholder="Tipo..." v-model="tipo"><br>
-        <input type="text" placeholder="Status..." v-model="statusId"><br>
+        <select class="selectBox" style="width: 192px;" v-model="selectCreate">
+          <option value="" disabled>Status</option>
+          <option v-for="(status, index) in statuses" :key="index" @click="indexStatusCreate = index+1">{{status.Descricao}}</option>
+        </select><br>
+        <!-- <input type="text" placeholder="Status..." v-model="statusId"><br> -->
         <button class="theme-blue" v-on:click="createTask()">Criar</button>
         <button class="theme-red" v-on:click="showCreateTaskWindow = false">Cancelar</button>
       </div>
@@ -80,12 +111,15 @@
         demandaIdUpdateOld: '',
         demandaIdUpdateNovo: '',
         updateArray: [],
+        pagePaginate: 1,
+        qtdPagePaginate: 1,
+        showPaginate: false,
+        showProject: false,
+        status: '',
+        selectCreate: '',
+        statuses: '',
+        indexStatusCreate: '',
       
-        // demandas: [
-        //   { descricao: 'Massa 1', comentario: 'Massa massa 1', status: 'Não iniciado' },
-        //   { descricao: 'Massa 2', comentario: 'Massa massa 2', status: 'Não iniciado' },
-        //   { descricao: 'Massa 3', comentario: 'Massa massa 3', status: 'Não iniciado' },
-        // ],
         chartStyle: {
           background: `conic-gradient(
             rgb(76, 175, 80) 0 33%, 
@@ -107,16 +141,16 @@
     methods: {
       createTask() {
         let thisInside = this;
-        if (this.nome.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.tipo.replace(/\s/g, "") !== "" && this.statusId.replace(/\s/g, "") !== "") {
+        if (this.nome.replace(/\s/g, "") !== "" && this.escopo.replace(/\s/g, "") !== "" && this.tipo.replace(/\s/g, "") !== "") {
           let estacaoId = this.$route.query.estacaoId;
-          console.log(this.nome+this.escopo+this.tipo+estacaoId+this.statusId);
-          axios.post(baseUrl + 'atividade/create', {Nome: this.nome, Escopo: this.escopo, Tipo: this.tipo, estacaoId: estacaoId, statusId: this.statusId})
+          axios.post(baseUrl + 'atividade/create', {Nome: this.nome, Escopo: this.escopo, Tipo: this.tipo, estacaoId: estacaoId, statusId: this.indexStatusCreate})
           .then(function(response){
             if(response.data.atividadeCriada){
-              thisInside.getAtividade();
+              // thisInside.getAtividade();
             }else{
               console.log("erro na criacao da atividade");
             }
+            thisInside.getAtividade()
           })
           this.showCreateTaskWindow = false
         }
@@ -130,34 +164,43 @@
           axios.delete(baseUrl + 'atividade/' + demandaId + '/delete')
           .then(function(response){
             if(response.data.atividadeDeletada){
-              thisInside.getAtividade();
             }else{
-              console.log("Erro na exclusao da atividade");
+                console.log("Erro na exclusao da atividade");
             }
+            thisInside.getAtividade();
           })
         }
       },
       updateStatus(index, demandaStatusId) {
         let status = document.getElementsByClassName("status")
-        // console.log(demandaStatusId);
         if(demandaStatusId == 1){
           status[index].classList.replace("theme-red", "theme-green")
-          status[index].innerHTML = "Concluído"
+          status[index].innerHTML = "Aprovado"
         }else if(demandaStatusId == 2){
           status[index].classList.replace("theme-red", "theme-red")
-          status[index].innerHTML = "Não iniciado"
+          status[index].innerHTML = "Reprovado"
         }else if(demandaStatusId == 3){
           status[index].classList.replace("theme-red", "theme-blue")
-          status[index].innerHTML = "Em andamento"
+          status[index].innerHTML = "Em análise"
         }
       },
       getAtividade(){
         let thisInside = this;
         let estacaoId = this.$route.query.estacaoId;
-        axios.get(baseUrl + 'atividades/1/' + estacaoId)
+        axios.get(baseUrl + 'atividades/' + this.pagePaginate + '/' + estacaoId)
         .then(function(response){
-          thisInside.demandas = response.data;
-          // console.log(response)
+          if(response.data.totalPage == 0){
+            thisInside.showProject = false;
+          }else{
+            thisInside.showProject = true
+            if(response.data.totalPage > 1){
+              thisInside.showPaginate = true
+              thisInside.qtdPagePaginate = response.data.totalPage;
+            }
+            delete response.data.totalPage;
+            thisInside.demandas = response.data;
+            // console.log(response)
+          }
         })
       },
       checkStatus(){
@@ -194,6 +237,31 @@
         })
         this.renameSubmit = false;
         // this.demandaIdUpdate = '';
+      },
+      getStatus(){
+        let thisInside = this;
+        let count = 0;
+        axios.get(baseUrl + 'statuses/1')
+        .then(function(response){
+          thisInside.statuses = response.data;
+        })
+      },
+      paginateFunction(){
+        this.getAtividade();
+      },
+      transformStatusId(index, statusId){
+        // status[index].classList.replace("theme-red", "theme-green")
+
+        if(statusId == 1){
+          return "Aprovado";
+        }else if(statusId == 2){
+          var classReplace = document.getElementsByClassName("status");         
+          return "Reprovado";
+        }else if(statusId == 3){
+          return "Em análise";
+        }else{
+          return;
+        }
       },
     }
   }
@@ -250,5 +318,8 @@
     position: fixed;
     bottom: 15px;
     right: 4%;
+  }
+  .nonLink a{
+    cursor: default;
   }
 </style>
