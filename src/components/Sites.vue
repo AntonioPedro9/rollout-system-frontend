@@ -188,11 +188,6 @@
           })
           this.getEstacoes();
           this.showCreateSiteWindow = false;
-          // this.nomeEstacao = ''
-          // this.escopo = ''
-          // this.Cidade = ''
-          // console.log(this.indexStatusCreate)
-          // console.log(this.cidades[index].id)
         }
         else {
           alert("Informações inválidas")
@@ -218,29 +213,21 @@
       renameSite(){
         let thisInside = this;
         let statusID = 1;
-        // console.log(this.siteIdRename)
-        // console.log(this.nomeEstacaoRename+this.escopoRename+this.cidadeRename+this.projetoIdRename+this.selectRename)
         if (this.nomeEstacaoRename.replace(/\s/g, "") !== "" && this.escopoRename.replace(/\s/g, "") !== "" && this.projetoIdRename.replace(/\s/g, "") !== "") {
-          // if(this.selectRename.toLowerCase() == 'aprovado'){
-          //   statusID = 1;
-          // }else if(this.selectRename.toLowerCase() == 'reprovado'){
-          //   statusID = 2;
-          // }else if(this.selectRename.toLowerCase() == 'em analise'){
-          //   statusID = 3;
-          // }
           axios.put(baseUrl + 'estacao/' + this.siteIdRename + '/update', {Nome: this.nomeEstacaoRename, Escopo: this.escopoRename, cidadeId: this.indexCidadeRename, projetoId: this.projetoIdRename, statusId: this.indexStatusRename})
           .then(function(response){
-            // console.log(response.data)
             if(response.data.updatedEstacao){
               thisInside.getEstacoes()
+              thisInside.emitMessage("Estação atualizada com sucesso!", 1);
             }else{
-              // console.log(response.data.updatedEstacao)
               thisInside.getEstacoes()
+              thisInside.emitMessage("Erro na atualização da estação!", 2);
             }
           })
           this.showRenameSiteWindow = false;
         }else{
-          alert("Preencha todos os campos")
+          thisInside.emitMessage("Preencha todos os campos", 2);
+          // alert("Preencha todos os campos")
         }
         // console.log(siteId)
       },
@@ -258,9 +245,11 @@
               thisInside.showPaginate = true;
               thisInside.qtdPagePaginate = response.data.totalPage;
             }
-            delete response.data.totalPage
+            var estacaoQtdCurrentPage = response.data.estacaoQtdCurrentPage;
+            delete response.data.totalPage;
+            delete response.data.estacaoQtdCurrentPage;
             thisInside.sites = response.data;
-            for(var i = 0; i < response.data.length; i++){
+            for(var i = 0; i < estacaoQtdCurrentPage; i++){
               // console.log(response.data[i].cidadeId)
               thisInside.getEstacaoCidade(response.data[i].cidadeId, i);
             }
@@ -301,6 +290,17 @@
       },
       paginateFunction(){
         this.getEstacoes();
+      },
+      emitMessage(message, type){
+        //Tipos de mensagem:
+        // 0 => primary
+        // 1 => success
+        // 2 => danger
+        // 3 => warning
+        if(!type){
+          type = 0;
+        }
+        this.$emit('Message', message, type);
       }
     }
   }
@@ -354,14 +354,6 @@
   .paginate{
     display: inline-flex;
     /* border: 3px solid #73AD21; */
-  }
-  .disabled{
-    cursor: not-allowed;
-    transition: .2s ease;
-  }
-  .disabled:hover{
-    opacity: .75;
-    background-color: #f99;
   }
   .nonLink a{
     cursor: default;

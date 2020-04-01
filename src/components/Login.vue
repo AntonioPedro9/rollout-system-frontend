@@ -14,7 +14,7 @@
         </transition>
         <h6 v-if="sendToken" @click="resendToken()"><a>Reenviar token</a></h6>
       </div>
-      <h6 v-if="showEsqueci"><a v-on:click="showRedefinirSenha= true">Esqueci minha senha</a></h6>
+      <h6 v-show="showEsqueci"><a v-on:click="showRedefinirSenha= true">Esqueci minha senha</a></h6>
       <h6>Não tem uma conta? <a v-on:click="$router.push('/signup')">Cadastre-se</a></h6>
     </div>
     <div class="blur-div" v-if="showRedefinirSenha">
@@ -140,12 +140,15 @@
                   expire: expireDate
                 }, key);
                 localStorage.userData = loginToken;
+                localStorage.username = thisInside.mat;
                 localStorage.user = response.data.user;
+                localStorage.userType = response.data.userType;
               }else{
                 localStorage.loggedin = true;
                 thisInside.sendToken = false;
                 localStorage.username = thisInside.mat;
                 localStorage.user = response.data.user;
+                localStorage.userType = response.data.userType;
               }
               thisInside.$router.push('/home')
               // window.location.href = "/home";

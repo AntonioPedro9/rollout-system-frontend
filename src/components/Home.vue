@@ -142,7 +142,8 @@
           })
           this.showCreateProjectWindow = false
         }else{
-          alert("Preencha todos os campos")
+          this.emitMessage("Preencha todos os campos", 0)
+          // alert("Preencha todos os campos")
         }
         // else {
         //   alert("Nome inválido")
@@ -157,10 +158,9 @@
             if(response.data.delectedProject){
               thisInside.getProjetos();
             }else{
-              console.log("Erro no delete do projeto")
+              thisInside.emitMessage("Erro no delete do projeto", 2);
             }
           })
-          // this.projetos.splice(projectId, 1)
         }
       },
       renameProject() {
@@ -180,6 +180,7 @@
           .then(function(response){
             if(response.data.updatedProject){
               thisInside.getProjetos()
+              thisInside.emitMessage("Projeto atualizado com sucesso!", 1);
               thisInside.nomeRename = '';
               thisInside.escopoRename = '';
               thisInside.selectRename = '';
@@ -189,23 +190,14 @@
             }
             thisInside.showRenameProjectWindow = false;
           })
-          // this.showRenameProjectWindow = false;
         }else{
-          alert("Preencha todos os campos");
+          this.emitMessage("Preencha todos os campos", 2);
         }
       },
       getProjetos(){
         let thisInside = this;
         axios.get(baseUrl+'projetos/' + this.pagePaginate)
-        .then(function(response){
-          // if(response.data.length == 0){
-          //   thisInside.projetos = '';
-          //   thisInside.projectEmpty = true;
-          // }else{
-          //   thisInside.projetos = response.data;
-          //   thisInside.projectEmpty = false;
-          // }
-          
+        .then(function(response){          
           if(response.data.totalPage == 0){
             thisInside.projetos = '';
             thisInside.projectEmpty = false;
@@ -244,11 +236,21 @@
       paginateFunction(){
         this.getProjetos();
       },
+      emitMessage(message, type){
+        //Tipos de mensagem:
+        // 0 => primary
+        // 1 => success
+        // 2 => danger
+        // 3 => warning
+        if(!type){
+          type = 0;
+        }
+        this.$emit('Message', message, type);
+      }
     }
   }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
   .cardHome:hover{
     transform: scale(1.05);
