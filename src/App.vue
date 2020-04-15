@@ -7,7 +7,7 @@
       href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css"
     /> -->
   </head>
-  <header class="theme-light">
+  <header class="theme-light header">
     <router-link to="/home" v-if="isAuthenticated">
       <!-- <img class="logo" src="https://logodownload.org/wp-content/uploads/2017/08/algar-logo.png"> -->
       <h5><strong>ROLLOUT</strong>SYSTEM</h5>
@@ -23,12 +23,16 @@
     <!-- <a href="/home">
         <h5><strong>ROLLOUT</strong>SYSTEM</h5>
     </a>-->
-    <button class="theme-green" v-on:click="$router.push('/verifyToken/teste')" v-if="!isAuthenticated">Token Verify</button>
-    <div v-if="isAuthenticated">
-      <button class="theme-blue user" v-if="!show" @click="show = true, checkUser()">{{user}}</button>
+    <div v-show="!isAuthenticated">
+      <button class="theme-gray" @click="$router.push('/login')">Login</button>
+      <button class="theme-teal" @click="$router.push('/signup')">Signup</button>
+      <button class="theme-green" v-on:click="$router.push('/verifyToken/teste')" v-show="!isAuthenticated">Token Verify</button>
+    </div>
+    <div v-show="isAuthenticated">
+      <button class="theme-blue user" v-show="!show" @click="show = true, checkUser()">{{user}}</button>
       <div class="card-options" v-if="show">
         <i class="material-icons icon-button" v-bind:style="{float: 'right'}" @click="show=false">close</i>
-        <button class="theme-green" v-if="isAdmin" @click="$router.push('/adminPage')">Admin Page</button>
+        <button class="theme-green" v-show="isAdmin" @click="$router.push('/adminPage')">Admin Page</button>
         <h6 class="user">{{username}}</h6>
         <button class="theme-red" v-on:click="logout">Logout</button>
       </div>
@@ -36,11 +40,11 @@
   </header>
 
   <main>
-    <i class="material-icons icon-button" style="font-size: 20px;" @click="$router.go(-1)" v-if="isAuthenticated">arrow_back</i>
     <b-alert :show="showMessagePrimary" variant="primary" dismissible @dismissed="showMessagePrimary=false">{{ displayMessage }}</b-alert>
     <b-alert :show="showMessageSuccess" variant="success" dismissible @dismissed="showMessageSuccess=false">{{ displayMessage }}</b-alert>
     <b-alert :show="showMessageDanger" variant="danger" dismissible @dismissed="showMessageDanger=false">{{ displayMessage }}</b-alert>
     <b-alert :show="showMessageWarning" variant="warning" dismissible @dismissed="showMessageWarning=false">{{ displayMessage }}</b-alert>
+    <i class="material-icons icon-button" style="font-size: 20px;" @click="$router.go(-1)" v-if="isAuthenticated">arrow_back</i>
     <router-view @Message="receiveMessageError">
 
     </router-view>
@@ -60,7 +64,6 @@ import Sites from "./components/Sites.vue";
 import Atividade from "./components/Atividade.vue";
 import VerifyToken from "./components/VerifyToken.vue";
 import AdminPage from "./components/AdminPage.vue";
-import ErrorMessage from "@/components/ErrorMessage.vue";
 
 import axios from "axios";
 import jwt from "jwt-simple";
@@ -76,7 +79,6 @@ export default {
     Sites,
     Atividade,
     VerifyToken,
-    ErrorMessage
   },
   data: function() {
     return {
@@ -254,13 +256,18 @@ main .cards {
   justify-content: center;
 }
 main .cards .card {
-  flex: 0 0 240px;
+  flex: 0 0 15vw;
 }
 header,
 main,
 footer {
   flex-shrink: 0;
   justify-content: space-between;
+}
+.header{
+  height: 6vh;
+  min-height: 34px;
+  /* width: 200px; */
 }
 /* this will be used to blur the background of some components */
 .blur-div {
@@ -323,13 +330,14 @@ footer {
   border-radius: 5px;
   box-shadow: 5px 5px 4px grey;
   margin-right: 10px;
-  padding: 10px;
+  padding: 0.4vw;
   transition: 0.2s ease;
 }
 .otherPaginateItem:hover {
   opacity: 0.8;
   background-color: rgba(100, 243, 33, 0.794);
   border-color: rgb(100, 243, 33);
+  color: black;
 }
 .disabledPaginateItem {
   /* background-color: rgb(56, 56, 56); */
@@ -337,19 +345,19 @@ footer {
   border-radius: 5px;
   box-shadow: 5px 5px 4px grey;
   margin-right: 10px;
-  padding: 10px;
+  padding: 0.4vw;
   transition: 0.2s ease;
   opacity: 0.7;
 }
 .disabledPaginateItem:hover {
-  background-color: hsla(0, 100%, 50%, 0.733);
+  background-color: rgba(255, 0, 0, 0.733);
   cursor: not-allowed;
-  border-color: rgb(33, 150, 243);
+  border-color: rgba(255, 0, 0, 0.3);
 }
 .user {
   text-transform: capitalize;
   text-align: center;
-  font-size: 20px;
+  font-size: 125%;
 }
 .theme-red:hover {
   transform: scale(1.1);
@@ -393,6 +401,7 @@ footer {
   margin-right: 1rem;
   border: 1px solid transparent;
   border-radius: 0.25rem;
+  z-index: 2;
 }
 .alert-heading {
   color: inherit;
@@ -456,7 +465,7 @@ footer {
 }
 .alert-warning {
   color: #856404;
-  background-color: #fff3cd;
+  background-color: #fadc7b;
   border-color: #ffeeba;
 }
 .alert-warning hr {

@@ -2,7 +2,7 @@
   <div class="cards">
     <div class="card">
       <div class="card-header" v-if="showProject">
-        <h5>Projeto</h5>
+        <h5>Estações</h5>
         <div class="search-box">
           <i class="material-icons">search</i>
           <input type="text" v-model="search" placeholder="Buscar..."/>
@@ -29,8 +29,8 @@
               <div class="bar-fill"></div>
             </div>
           </td>
-          <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteSite(site.id)">delete</i></td>
           <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="showRenameSiteWindow = true, getStatus(), getCidade(), siteIdRename = site.id">edit</i></td>
+          <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteSite(site.id)">delete</i></td>
         </tr>
       </table>
       <div class="card nonLink" style="text-align: center; font-size: 4vh;" v-if="!showProject">
@@ -179,18 +179,16 @@
           axios.post(baseUrl + 'estacao/create', {Nome: this.nomeEstacao, Escopo: this.escopo, cidadeId: this.indexCidadeCreate, projetoId: this.projetoId, statusId: this.indexStatusCreate})
           .then(function(response){
             if(response.data.estacaoCriada){
-              // thisInside.getEstacoes();
+              thisInside.emitMessage("Estação criada com sucesso!", 1);
             }else{
-              console.log(response);
+              thisInside.emitMessage("Erro na criação da estação.", 2);
             }
-            // console.log(response)
-            // console.log(response.data.estacaoCriada);
           })
           this.getEstacoes();
           this.showCreateSiteWindow = false;
         }
         else {
-          alert("Informações inválidas")
+          this.emitMessage("Não foi possível criar uma nova estação. Preencha todos os campos.", 2)
           this.showCreateSiteWindow = false;
         }
       },
@@ -200,14 +198,14 @@
           axios.delete(baseUrl + 'estacao/' + siteId + '/delete')
           .then(function(response){
             if(response.data.estacaoDeleted){
+              thisInside.emitMessage("Estação excluída com sucesso!", 1);
               thisInside.getEstacoes();
             }else{
-              console.log("Erro no delete da estacao")
+              thisInside.emitMessage("Erro na exclusão da estação.", 2);
             }
           })
         }else{
-          alert("Estacao nao apagada!")
-          this.getEstacoes()
+          thisInside.emitMessage("Não foi possível excluir a estação.", 2);
         }
       },
       renameSite(){
@@ -221,12 +219,12 @@
               thisInside.emitMessage("Estação atualizada com sucesso!", 1);
             }else{
               thisInside.getEstacoes()
-              thisInside.emitMessage("Erro na atualização da estação!", 2);
+              thisInside.emitMessage("Erro na atualização da estação.", 2);
             }
           })
           this.showRenameSiteWindow = false;
         }else{
-          thisInside.emitMessage("Preencha todos os campos", 2);
+          thisInside.emitMessage("Não foi possível atualizar esta estação. Preencha todos os campos.", 2);
           // alert("Preencha todos os campos")
         }
         // console.log(siteId)
@@ -328,14 +326,15 @@
     background-color: #F1F1F1;
   }
   .bar {
-    width: 100px;
+    width: 7vw;
+    min-width: 14px;
     height: 4px;
 
     background-color: rgba(33, 150, 243, 0.4);
     border-radius: 2px;
   }
   .bar-fill {
-    width: 64px;
+    width: 2.5vw;
     height: 4px;
 
     background-color: rgba(33, 150, 243, 1.0);
@@ -357,5 +356,8 @@
   }
   .nonLink a{
     cursor: default;
+  }
+  input{
+    margin: 8px;
   }
 </style>

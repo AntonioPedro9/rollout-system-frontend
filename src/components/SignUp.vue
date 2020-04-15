@@ -1,6 +1,6 @@
 <template>
   <div class="cards" oncontextmenu="return false">
-    <div class="card">
+    <div class="signUp card">
       <h5>Cadastrar-se</h5>
       <div onpaste="return false" onselectstart="return false;">
         <input name="Nome" type="text" placeholder="Nome..." autocomplete="off" v-model="nome" required/>
@@ -182,5 +182,9 @@
   }
   .fade-enter-active, .fade-leave-active {
     transition: .3s;
+  }
+  .signUp{
+    min-width: 240px;
+    max-width: 270px;
   }
 </style>

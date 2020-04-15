@@ -11,7 +11,7 @@
             <i class="material-icons icon-button options-button">more_vert</i>
             <div class="card card-options">
               <ul>
-                <li v-on:click="showRenameProjectWindow = true; idProjectRename = projeto.id; getStatus()">Renomear</li>
+                <li v-on:click="showRenameProjectWindow = true; idProjectRename = projeto.id; getStatus()">Editar</li>
                 <li v-on:click="deleteProject(projeto.id)">Deletar</li>
               </ul>
             </div>
@@ -69,10 +69,10 @@
         :click-handler="paginateFunction"
         :container-class="'paginate'"
         :first-last-button="true"
-        :prev-text="'Prev'"
-        :next-text="'Next'"
-        :first-button-text="'First'"
-        :last-button-text="'Last'"
+        :first-button-text="'<<'"
+        :prev-text="'<'"
+        :last-button-text="'>>'"
+        :next-text="'>'"
         :no-li-surround="true"
         :page-link-class="'otherPaginateItem'"
         :prev-link-class="'otherPaginateItem'"
@@ -136,13 +136,15 @@
           .then(function(response){
             if(response.data.createdProject){
               thisInside.getProjetos();
+              thisInside.emitMessage("Projeto criado com sucesso.", 1);
             }else{
               thisInside.getProjetos();
+              thisInside.emitMessage("Erro na criação do projeto.", 2);
             }
           })
           this.showCreateProjectWindow = false
         }else{
-          this.emitMessage("Preencha todos os campos", 0)
+          this.emitMessage("Não foi possível criar um novo projeto. Preencha todos os campos.", 2)
           // alert("Preencha todos os campos")
         }
         // else {
@@ -157,10 +159,13 @@
           .then(function(response){
             if(response.data.delectedProject){
               thisInside.getProjetos();
+              thisInside.emitMessage("Projeto excluído com sucesso.", 1);
             }else{
-              thisInside.emitMessage("Erro no delete do projeto", 2);
+              thisInside.emitMessage("Erro na exclusão do projeto.", 2);
             }
           })
+        }else{
+          this.emitMessage("Projeto não excluído.", 3);
         }
       },
       renameProject() {
@@ -186,12 +191,12 @@
               thisInside.selectRename = '';
               statusID = '';
             }else{
-              console.log(response.data.updatedProject)
+              thisInside.emitMessage("Erro na atualização do projeto.", 2);
             }
             thisInside.showRenameProjectWindow = false;
           })
         }else{
-          this.emitMessage("Preencha todos os campos", 2);
+          this.emitMessage("Não foi possível atualizar esse projeto. Preencha todos os campos.", 2);
         }
       },
       getProjetos(){
@@ -252,6 +257,9 @@
 </script>
 
 <style scoped>
+  .cardHome{
+    min-width: 199px;
+  }
   .cardHome:hover{
     transform: scale(1.05);
   }

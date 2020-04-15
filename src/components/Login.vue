@@ -1,6 +1,6 @@
 <template>
   <div class="cards" oncontextmenu="return false">
-    <div class="card">
+    <div class="login card">
       <h5>Login</h5>
       <div onpaste="return true" onselectstart="return false;">
         <input name="Matricula" type="text" placeholder="Matrícula..." v-model="mat" @keyup.enter="login()" autocomplete="off" required autofocus/>
@@ -288,5 +288,9 @@
     background-color: #f99;
     padding: 10px;
     border-radius: 4px;
+  }
+  .login{
+    min-width: 240px;
+    max-width: 270px;
   }
 </style>

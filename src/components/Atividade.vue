@@ -36,7 +36,7 @@
             <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Escopo" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
             <td><input class="editable" style="width: 140px;" type="text" v-model="demanda.Tipo" v-on:keyup.enter="updateAtividade()" @click="updateArray = demanda, enableEdit(demanda.id)"></td>
             <!-- <td v-if="true"><input class="editable" type="text" v-model="demanda.estacaoId"></td> -->
-            <td><div class="status theme-red" @click="updateStatus(index, demanda.statusId)"> {{ transformStatusId(index, demanda.statusId) }} </div></td>
+            <td><div class="theme-red status" @click="updateStatus(index, demanda.statusId)"> {{ transformStatusId(index, demanda.statusId) }} </div></td>
             <td><i class="material-icons icon-button" style="font-size: 18px" v-on:click="deleteTask(demanda.id)">delete</i></td>
           </tr>
         </table>
@@ -74,9 +74,9 @@
     <div class="blur-div" v-if="showCreateTaskWindow">
       <div class="card creation-window">
         <h5>Nova demanda</h5>
-        <input type="text" placeholder="Nome..." v-model="nome" autofocus><br>
-        <input type="text" placeholder="Escopo..." v-model="escopo"><br>
-        <input type="text" placeholder="Tipo..." v-model="tipo"><br>
+        <input class="text" type="text" placeholder="Nome..." v-model="nome" autofocus><br>
+        <input class="text" type="text" placeholder="Escopo..." v-model="escopo"><br>
+        <input class="text" type="text" placeholder="Tipo..." v-model="tipo"><br>
         <select class="selectBox" style="width: 192px;" v-model="selectCreate">
           <option value="" disabled>Status</option>
           <option v-for="(status, index) in statuses" :key="index" @click="indexStatusCreate = index+1">{{status.Descricao}}</option>
@@ -146,16 +146,16 @@
           axios.post(baseUrl + 'atividade/create', {Nome: this.nome, Escopo: this.escopo, Tipo: this.tipo, estacaoId: estacaoId, statusId: this.indexStatusCreate})
           .then(function(response){
             if(response.data.atividadeCriada){
-              // thisInside.getAtividade();
+              thisInside.emitMessage("Demanda criada com sucesso!", 1);
             }else{
-              console.log("erro na criacao da atividade");
+              thisInside.emitMessage("Erro na criação da demanda.", 2);
             }
             thisInside.getAtividade()
           })
           this.showCreateTaskWindow = false
         }
         else {
-          alert("Informações inválidas")
+          this.emitMessage("Não foi possível atualizar esse projeto. Preencha todos os campos.", 2);
         }
       },
       deleteTask(demandaId) {
@@ -164,11 +164,14 @@
           axios.delete(baseUrl + 'atividade/' + demandaId + '/delete')
           .then(function(response){
             if(response.data.atividadeDeletada){
+              thisInside.emitMessage("Demanda excluída com sucesso!", 1);
             }else{
-                console.log("Erro na exclusao da atividade");
+              thisInside.emitMessage("Erro na exclusão da demanda.", 2);
             }
             thisInside.getAtividade();
           })
+        }else{
+          this.emitMessage("Demanda não excluída.", 2);
         }
       },
       updateStatus(index, demandaStatusId) {
@@ -263,6 +266,17 @@
           return;
         }
       },
+      emitMessage(message, type){
+        //Tipos de mensagem:
+        // 0 => primary
+        // 1 => success
+        // 2 => danger
+        // 3 => warning
+        if(!type){
+          type = 0;
+        }
+        this.$emit('Message', message, type);
+      }
     }
   }
 </script>
@@ -296,6 +310,7 @@
     border-bottom: none;
     cursor: text;
     text-align: center;
+    padding: 0vw;
   }
   .editable:hover {
     border-bottom: 1px solid currentColor;
@@ -321,5 +336,11 @@
   }
   .nonLink a{
     cursor: default;
+  }
+  td{
+    padding: 0.3vw;
+  }
+  .text{
+    margin: 8px;
   }
 </style>

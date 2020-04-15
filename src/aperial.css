@@ -26,10 +26,17 @@ body {
   background-color: rgb(241, 241, 241);
   
   font-family: Arial;
-  font-size: 16px;
+  font-size: 14px;
   
   overflow-x: hidden;
 }
+
+@media (max-width: 750px) {
+  body{
+    overflow-x: auto;
+  }
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0.65em 8px 0.325em 8px;
   font-weight: 400;
@@ -121,10 +128,10 @@ ul {
   
   text-align: left;
 }
-  ul li {
-    display: flex;
-    align-items: center;
-  }
+ul li {
+  display: flex;
+  align-items: center;
+}
 li {
   padding: 8px 16px;
 }
@@ -139,7 +146,7 @@ tr {
   border-bottom: 1px solid #888;
 }
 td, th {
-  padding: 16px;
+  padding: 0.8vw;
   text-align: center;
 }
 
@@ -190,8 +197,12 @@ button, input[type="submit"], input[type="button"] {
     margin: 0px 8px 0px -8px;
   }
   .fab {
-    width: 56px;
-    height: 56px;
+    min-width: 30px;
+    min-height: 30px;
+    max-width: 56px;
+    max-height: 56px;
+    width: 4vw;
+    height: 4vw;
     display: inline-flex;
     justify-content: center;
     align-items: center;
@@ -245,7 +256,11 @@ input[type="search"],
 input[type="reset"] {
   width: 192px;
   padding: 4px 0px;
-  margin: 8px;
+  /* margin: -1vw; */
+  margin-top: 8px;
+  margin-bottom: 8px;
+  margin-left: 0.5px;
+  margin-right: 0.5vw;
   
   color: currentColor;
   background-color: transparent;

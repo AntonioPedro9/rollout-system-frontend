@@ -4,7 +4,7 @@
             <div class="card" v-if="login">
                 <h6>Para continuar, confirme sua senha</h6>
                 <div onpaste="return true" onselectstart="return false;">
-                    <input id="password" name="Senha" type="password" placeholder="Senha..." v-model="password" v-on:keyup.enter="checkLogin()" autocomplete="off" required autofocus/>
+                    <input style="margin-left: 8px;" id="password" name="Senha" type="password" placeholder="Senha..." v-model="password" v-on:keyup.enter="checkLogin()" autocomplete="off" required autofocus/>
                     <!-- <i class="material-icons icon-button" style="font-size: 18px" @click="showPassword(0)">remove_red_eye</i> -->
                     <transition :name="computedTransition">
                         <div class="errorAlert" v-if="!errorHandling">{{ messageError }}</div>
@@ -14,27 +14,21 @@
             </div>
         </div>
         <div class="cards">
-            <div class="card1" v-if="!login">
+            <div class="cards1" v-if="!login">
                 <a>Usuários a serem verificados</a><br>
                 <input class="theme-blue" type="submit" @click="hasData=false" v-if="hasData" value="Ocultar"/>
                 <input class="theme-blue" type="submit" @click="user(), hasData=true" v-if="!hasData" value="Mostrar"/>
-                <div class="cardsVerify" v-if="hasData">
-                    <!-- <div class="cardVerify" v-show="hasData">
-                        <h6 class="title"><a class="nonLink">Users:</a></h6>
-                        <h6 class="title"><a class="nonLink">Index - Nome - Matricula - isVerified- QtdUsers: {{ items.length }}</a></h6> -->
-                    <div class="cards">
-                        <div class="card" style="width: 18px" v-for="(item, index) in items" :key="index">
-                            <p class="nonLink" style="text-transform: capitalize">
-                                {{ item.id }} - {{ item.Nome }} - {{ item.isVerified }} - {{ item.isVerifiedByAdmin }} - {{ item.refusedByAdmin }}
-                            </p>
-                            <button class="theme-green" @click="verifyAccount(item.id, 1)">Aceitar</button>
-                            <button class="theme-red" @click="verifyAccount(item.id, 0)">Recusar</button>
-                        </div>
+                <div v-if="hasData">
+                    <div class="card" v-for="(item, index) in items" :key="index">
+                        <p class="nonLink" style="text-transform: capitalize">
+                            {{ item.id }} - {{ item.Nome }} - {{ item.isVerified }}
+                        </p>
+                        <button class="theme-green" @click="verifyAccount(item.id, 1)">Aceitar</button>
+                        <button class="theme-red" @click="verifyAccount(item.id, 0)">Recusar</button>
                     </div>
                 </div>
-            <!-- </div> -->
-            </div>
-            <div class="card1" v-if="!login">
+            </div>      
+            <div class="cards1" v-if="!login">
                 <a>Todos usuários</a><br>
                 <input class="theme-blue" type="submit" @click="hasData1=false" v-if="hasData1" value="Ocultar"/>
                 <input class="theme-blue" type="submit" @click="getUsers(), hasData1=true" v-if="!hasData1" value="Mostrar"/>
@@ -43,6 +37,8 @@
                         <p class="nonLink" style="text-transform: capitalize">
                             {{ item.id }} - {{ item.Nome }} - {{ item.Matricula }} - {{ item.userType }}
                         </p>
+                        <button class="theme-green" @click="updateUserType(item.id, 0, item.Matricula)" :disabled="item.userType=='admin'">Tornar Admin</button>
+                        <button class="theme-red" @click="updateUserType(item.id, 1, item.Matricula)" :disabled="item.userType=='default'">Tornar Default</button>
                     </div>
                 </div>
             </div>
@@ -56,8 +52,8 @@
     export default {
         data: () => {
             return{
-                mat: '11822',
-                password: 'senhateste',
+                mat: '',
+                password: '',
                 token: '',
                 items: '',
                 items1: '',
@@ -132,9 +128,31 @@
                 let thisInside = this;
                 axios.get(baseUrl + 'usuario')
                 .then(function(response){
-                    console.log(response)
                     thisInside.items1 = response.data;
                 })
+            },
+            updateUserType(userId, userType, userToBeChanged){
+                let thisInside = this;
+                axios.post(baseUrl + 'usuario/updateUserType', {id: userId, userType: userType, currentUserId: localStorage.username, userToBeChanged: userToBeChanged})
+                .then(function(response){
+                    if(response.data.userUpdated){
+                        thisInside.emitMessage(response.data.result, 1);
+                    }else{
+                        thisInside.emitMessage(response.data.result, 2);
+                    }
+                    thisInside.getUsers();
+                })
+            },
+            emitMessage(message, type){
+                //Tipos de mensagem:
+                // 0 => primary
+                // 1 => success
+                // 2 => danger
+                // 3 => warning
+                if(!type){
+                type = 0;
+                }
+                this.$emit('Message', message, type);
             }
         }
     }
@@ -198,7 +216,8 @@
     .theme-green:hover{
         transform: scale(1.1);
     }
-    .card1{
+    .cards1{
+        width: 40vw;
         padding: 8px;
         margin: 8px;
         color: #444;
@@ -208,7 +227,14 @@
 
         text-align: center;
         transition: transform .25s;
-        flex: 0 0 20vw;
+        /* flex: 0 0 23vw; */
         min-width: 250px;
+    }
+    button:disabled{
+        opacity: .5;
+        cursor: not-allowed;
+    }
+    button:disabled:hover{
+        transform: scale(1);
     }
 </style>
